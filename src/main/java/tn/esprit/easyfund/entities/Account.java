@@ -23,9 +23,10 @@ public class Account implements Serializable {
     private float balance;
     private Date creationDate;
     private Date updateDate;
-    private Date lastlogin;
+    private Date lastLogin;
     private float score;
     private boolean isActive;
+    private int accounRref;
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
     @OneToMany(cascade = CascadeType.ALL ,mappedBy = "account")
