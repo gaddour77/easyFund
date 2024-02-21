@@ -31,8 +31,8 @@ public class Account implements Serializable {
     private AccountType accountType;
     @OneToMany(cascade = CascadeType.ALL ,mappedBy = "account")
     private Set<MicroCredit> microCredits;
-    @OneToOne(mappedBy = "account")
-    private MicroCredit microCredit;
+    @OneToOne
+    private User user;
 
 
 }

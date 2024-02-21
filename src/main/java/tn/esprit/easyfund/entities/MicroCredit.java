@@ -27,7 +27,7 @@ public class MicroCredit implements Serializable {
     private CreditStatus creditStatus;
     @Enumerated(EnumType.STRING)
     private CreditType creditType;
-    @OneToOne
+    @ManyToOne
     private Account account;
 
 
