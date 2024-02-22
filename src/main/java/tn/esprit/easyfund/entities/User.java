@@ -31,9 +31,9 @@ public class User implements Serializable {
     private String password;
     @NonNull
     private Long cin;
-    @NonNull
+
     private LocalDate dateOfBirth;
-    @NonNull
+
     private Float salary;
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;

@@ -28,6 +28,5 @@ public class Claim {
     private ClaimStatus claimStatus;
     @ManyToOne
     private User user;
-    @NonNull
-    private LocalDate dateOfBirth;
+
 }
