@@ -10,4 +10,6 @@ import java.util.List;
 public interface IFinancingRequestRepository extends JpaRepository<FinancingRequest,Long> {
     @Query("SELECT fr FROM FinancingRequest fr WHERE fr.offer.offreId = :offerId")
     List<FinancingRequest> findByOffer(@Param("offerId") Long offerId);
+    @Query("SELECT fr FROM FinancingRequest fr WHERE fr.user.userId = :userId")
+    List<FinancingRequest> findByUser(@Param("userId") Long userId);
 }

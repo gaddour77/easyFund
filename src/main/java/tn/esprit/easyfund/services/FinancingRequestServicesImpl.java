@@ -38,4 +38,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         financingRequestRepository.deleteById(id);
         return "financing request deleted :"+id;
     }
+    public List<FinancingRequest> findByUser(long id){
+        return financingRequestRepository.findByUser(id);
+    }
 }

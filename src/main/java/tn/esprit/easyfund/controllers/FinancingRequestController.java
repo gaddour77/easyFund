@@ -33,6 +33,10 @@ public class FinancingRequestController {
     public List<FinancingRequest> findByOffer(@PathVariable long id){
         return financingRequestServices.findByOffer(id);
     }
+    @GetMapping("/findbyuser/{id}")
+    public List<FinancingRequest> findByUser(long id){
+        return financingRequestServices.findByUser(id);
+    }
     @DeleteMapping("/delete/{id}")
     public String delete(@PathVariable long id){
         return financingRequestServices.delete(id);

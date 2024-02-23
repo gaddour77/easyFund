@@ -12,4 +12,5 @@ public interface IFinancingRequestServices {
     public List<FinancingRequest>  findByOffer (long id);
     public FinancingRequest update(FinancingRequest financingRequest);
     public String delete(long id);
+    public List<FinancingRequest> findByUser(long id);
 }
