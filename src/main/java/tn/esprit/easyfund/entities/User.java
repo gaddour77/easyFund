@@ -1,6 +1,7 @@
 package tn.esprit.easyfund.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +9,7 @@ import org.springframework.cglib.core.Local;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -43,6 +45,15 @@ public class User implements Serializable {
     private Account account;
     @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ProjectRating> projectRatings;
 
+
+    @OneToMany(cascade = CascadeType.ALL)
+    Set<Project> projectSet;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    Set<InvestementRequest> investementRequests;
 
 }

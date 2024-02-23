@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @Entity
 public class FinancingRequest  implements Serializable {
     @Id
