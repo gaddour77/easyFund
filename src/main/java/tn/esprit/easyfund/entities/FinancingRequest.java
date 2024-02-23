@@ -1,13 +1,12 @@
 package tn.esprit.easyfund.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
-
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
