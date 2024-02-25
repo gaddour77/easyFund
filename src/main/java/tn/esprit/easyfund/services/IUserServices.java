@@ -5,9 +5,8 @@ import tn.esprit.easyfund.entities.User;
 import java.util.List;
 
 public interface IUserServices {
-    User getUserById(Long userId);
-    List<User> getAllUsers();
-    User saveUser(User user);
+    User registerUser(User user);
     User updateUser(Long userId, User updatedUser);
-    void deleteUser(Long userId);
+    User banUser(Long userId);
+    User showUserDetails(Long userId);
 }

@@ -22,7 +22,7 @@ public class ProfileController {
         return ResponseEntity.ok(profile);
     }
 
-    @PostMapping("/create/{userId}")
+   /* @PostMapping("/create/{userId}")
     public ResponseEntity<Profile> createProfileForUser(@PathVariable Long userId) {
         Profile createdProfile = profileService.createProfileForUser(userId);
 
@@ -32,7 +32,7 @@ public class ProfileController {
             // Handle creation failure (e.g., user not found)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-    }
+    }*/
 
     @PutMapping("/update/{userId}")
     public ResponseEntity<Profile> updateProfile(@PathVariable Long userId, @RequestBody Profile updatedProfile) {

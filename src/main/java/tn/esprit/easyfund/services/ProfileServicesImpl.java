@@ -31,17 +31,10 @@ public class ProfileServicesImpl implements IProfileServices {
     }
 
     @Override
-    public Profile createProfileForUser(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-
-        if (user.isPresent()) {
-            Profile profile = new Profile();
-            profile.setUser(user.get());
-            return profileRepository.save(profile);
-        } else {
-            // Handle user not found
-            return null;
-        }
+    public Profile createProfileForUser(User user) {
+        Profile profile = new Profile();
+        profile.setUser(user);
+        return profileRepository.save(profile);
     }
 
     @Override

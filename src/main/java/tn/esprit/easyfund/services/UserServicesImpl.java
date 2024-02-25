@@ -7,42 +7,39 @@ import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.util.List;
 @Service
-public class UserServicesImpl implements IUserServices{
+public class UserServicesImpl implements IUserServices {
+
     @Autowired
     private IUserRepository userRepository;
 
-    @Override
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
-    }
+    @Autowired
+    private IProfileServices profileService;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public User registerUser(User user) {
+        // Perform user registration logic
+
+        // Save the user to the database
+        User newUser = userRepository.save(user);
+
+        // Create profile for the registered user
+        profileService.createProfileForUser(newUser);
+
+        return newUser;
     }
 
-    @Override
-    public User saveUser(User user) {
-        // Add any additional business logic if needed
-        return userRepository.save(user);
-    }
     @Override
     public User updateUser(Long userId, User updatedUser) {
+        // Perform user update logic
+
+        // Retrieve the user from the database
         User existingUser = userRepository.findById(userId).orElse(null);
 
         if (existingUser != null) {
-            // Update fields that are allowed to be updated
-            existingUser.setNom(updatedUser.getNom());
-            existingUser.setPrenom(updatedUser.getPrenom());
-            existingUser.setUsername(updatedUser.getUsername());
-            existingUser.setPassword(updatedUser.getPassword());
-            existingUser.setCin(updatedUser.getCin());
-            existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
-            existingUser.setSalary(updatedUser.getSalary());
-            existingUser.setUserStatus(updatedUser.getUserStatus());
-            existingUser.setRole(updatedUser.getRole());
-            // Update other fields as needed
+            // Update user fields based on updatedUser
+            // ...
 
+            // Save the updated user to the database
             return userRepository.save(existingUser);
         } else {
             // Handle user not found
@@ -51,7 +48,28 @@ public class UserServicesImpl implements IUserServices{
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+    public User banUser(Long userId) {
+        // Perform user ban logic
+
+        // Retrieve the user from the database
+        User existingUser = userRepository.findById(userId).orElse(null);
+
+        if (existingUser != null) {
+            // Set user status to BANNED
+            // existingUser.setUserStatus(UserStatus.BANNED);
+
+            // Save the updated user to the database
+            return userRepository.save(existingUser);
+        } else {
+            // Handle user not found
+            return null;
+        }
+    }
+
+    @Override
+    public User showUserDetails(Long userId) {
+        // Retrieve the user from the database
+        return userRepository.findById(userId).orElse(null);
     }
 }
+

@@ -22,6 +22,7 @@ public class Profile {
     @OneToOne
     private Adress adress ;
     @OneToOne
+    @JoinColumn(name = "userId")
     private User user;
 
 }

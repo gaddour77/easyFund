@@ -16,38 +16,40 @@ public class UserController {
     @Autowired
     private IUserServices userService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
-        return ResponseEntity.ok(user);
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User newUser = userService.registerUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }
-
-    @PostMapping
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        User savedUser = userService.saveUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
-        return ResponseEntity.noContent().build();
-    }
-    @PutMapping("/{userId}")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
-        User updatedUserData = userService.updateUser(userId, updatedUser);
-
-        if (updatedUserData != null) {
-            return ResponseEntity.ok(updatedUserData);
+        User user = userService.updateUser(userId, updatedUser);
+        if (user != null) {
+            return ResponseEntity.ok(user);
         } else {
-            // Handle user not found
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/ban/{userId}")
+    public ResponseEntity<User> banUser(@PathVariable Long userId) {
+        User bannedUser = userService.banUser(userId);
+        if (bannedUser != null) {
+            return ResponseEntity.ok(bannedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/details/{userId}")
+    public ResponseEntity<User> showUserDetails(@PathVariable Long userId) {
+        User user = userService.showUserDetails(userId);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
 }
+

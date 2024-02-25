@@ -32,12 +32,12 @@ public class ClaimServicesImpl implements IClaimServices{
         Claim existingClaim = claimRepository.findById(claimId).orElse(null);
 
         if (existingClaim != null) {
-            // Update fields that are allowed to be updated
+
             existingClaim.setDescription(updatedClaim.getDescription());
             existingClaim.setClaimType(updatedClaim.getClaimType());
             existingClaim.setClaimStatus(updatedClaim.getClaimStatus());
             existingClaim.setUser(updatedClaim.getUser());
-            // Update other fields as needed
+
 
             return claimRepository.save(existingClaim);
         } else {
