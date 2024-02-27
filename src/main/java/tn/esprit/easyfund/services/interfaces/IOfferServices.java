@@ -1,4 +1,4 @@
-package tn.esprit.easyfund.services;
+package tn.esprit.easyfund.services.interfaces;
 
 import tn.esprit.easyfund.entities.Offer;
 

@@ -1,13 +1,14 @@
-package tn.esprit.easyfund.services;
+package tn.esprit.easyfund.services.implementations;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
+import tn.esprit.easyfund.services.interfaces.IOfferServices;
 
 @AllArgsConstructor
 @Service
-public class OfferServicesImpl implements IOfferServices{
+public class OfferServicesImpl implements IOfferServices {
  private IOfferRepositories offerRepositories;
 
     @Override

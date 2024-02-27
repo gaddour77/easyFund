@@ -1,5 +1,6 @@
 package tn.esprit.easyfund.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,19 +20,19 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class MicroCredit implements Serializable {
-    @JsonIgnore
+public  class MicroCredit  {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long microCreditId;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/mm/yyyy")
     @NotNull(message = "Start Date cannot be empty")
     private Date startDate;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/mm/yyyy")
     @NotNull(message = "Due Date cannot be empty")
     private Date dueDate;
 
@@ -59,7 +60,7 @@ public class MicroCredit implements Serializable {
     @NotNull(message = "Guarantor Account cannot be empty")
     private Account guarantorAccount;
 
-    @NotNull(message = "Guarantor Prof cannot be empty")
+    //@NotNull(message = "Guarantor Prof cannot be empty")
     private byte[] guarantorFile;
 
     @NotNull(message = "Interest Rate cannot be empty")
@@ -70,4 +71,5 @@ public class MicroCredit implements Serializable {
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     private Account accountFK;
+
 }

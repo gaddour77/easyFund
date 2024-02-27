@@ -1,10 +1,9 @@
 package tn.esprit.easyfund.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.Offer;
-import tn.esprit.easyfund.services.OfferServicesImpl;
+import tn.esprit.easyfund.services.implementations.OfferServicesImpl;
 
 @RestController
 @AllArgsConstructor

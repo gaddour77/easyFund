@@ -1,5 +1,6 @@
 package tn.esprit.easyfund.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -29,7 +31,9 @@ public class Account implements Serializable {
     private int accounRref;
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
-    @OneToMany(cascade = CascadeType.ALL ,mappedBy = "account")
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL ,mappedBy = "accountFK")
     private Set<MicroCredit> microCredits;
     @OneToOne
     private User user;
