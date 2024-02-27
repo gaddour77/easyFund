@@ -40,7 +40,7 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToOne
-    private Account account;
+    private BankAccount account;
     @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
 

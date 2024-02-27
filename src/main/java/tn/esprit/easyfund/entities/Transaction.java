@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="Transaction")
@@ -36,5 +37,5 @@ public class Transaction {
     private Status stat;
 
     @ManyToOne
-    Account Account;
+    BankAccount bankAccount;
 }
