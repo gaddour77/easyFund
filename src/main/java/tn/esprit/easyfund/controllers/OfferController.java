@@ -39,4 +39,6 @@ public class OfferController {
     public String delete (@PathVariable long id){
         return offerServices.delete(id);
     }
+    @PostMapping("/scrap")
+    public List<Offer> scrap(){return offerServices.addScrap();}
 }
