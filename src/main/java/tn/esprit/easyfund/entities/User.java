@@ -5,13 +5,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.cglib.core.Local;
+import tn.esprit.easyfund.token.Token;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -22,11 +25,11 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     @NonNull
-    private String nom;
+    private String firstname;
     @NonNull
-    private String prenom;
+    private String lastname;
     @NonNull
-    private String username;
+    private String email;
     @NonNull
     private String password;
     @NonNull
@@ -41,6 +44,8 @@ public class User implements Serializable {
     private Role role;
     @OneToOne
     private Account account;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
     @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
