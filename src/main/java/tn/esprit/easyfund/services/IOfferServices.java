@@ -11,4 +11,5 @@ public List<Offer> addOffers( List<Offer> listOffers);
 public Offer updateOffer(Offer offer);
 public List<Offer> findAll();
 public String delete( long id);
+
 }

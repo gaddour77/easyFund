@@ -15,17 +15,28 @@ public class Offer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long offreId;
-   // @NonNull
+    @NonNull
     private String offerDescription;
-   // @NonNull
+    @NonNull
     private String offerLink;
-   // @NonNull
+    @NonNull
     private float offerPrice;
-  //  @NonNull
+    @NonNull
     @Enumerated(EnumType.STRING)
     private OfferStatus offerStatus;
+    @Enumerated(EnumType.STRING)
+    private  OfferCategory offerCategory;
+
     @OneToMany(cascade = CascadeType.ALL ,mappedBy = "offer")
     private Set<FinancingRequest> financingRequests;
+    public Offer(@NonNull String offerDescription, @NonNull String offerLink, @NonNull float offerPrice, @NonNull OfferStatus offerStatus, OfferCategory offerCategory) {
+        this.offerDescription = offerDescription;
+        this.offerLink = offerLink;
+        this.offerPrice = offerPrice;
+        this.offerStatus = offerStatus;
+        this.offerCategory = offerCategory;
+
+    }
 
 
 }
