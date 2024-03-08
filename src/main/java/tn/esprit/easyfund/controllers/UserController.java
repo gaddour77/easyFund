@@ -1,6 +1,7 @@
 package tn.esprit.easyfund.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/ban/{userId}")
-    public ResponseEntity<User> banUser(@PathVariable Long userId) {
+    public ResponseEntity<User> banUser(@PathVariable Long userId) throws ChangeSetPersister.NotFoundException {
         User bannedUser = userService.banUser(userId);
         if (bannedUser != null) {
             return ResponseEntity.ok(bannedUser);

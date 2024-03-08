@@ -1,4 +1,4 @@
-package tn.esprit.easyfund.auth;
+package tn.esprit.easyfund.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

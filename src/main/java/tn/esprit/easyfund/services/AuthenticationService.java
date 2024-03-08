@@ -1,10 +1,14 @@
-package tn.esprit.easyfund.auth;
+package tn.esprit.easyfund.services;
 
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
+import tn.esprit.easyfund.entities.RegisterRequest;
 import tn.esprit.easyfund.config.JwtService;
-import tn.esprit.easyfund.token.Token;
-import tn.esprit.easyfund.token.TokenRepository;
-import tn.esprit.easyfund.token.TokenType;
+import tn.esprit.easyfund.entities.AuthenticationRequest;
+import tn.esprit.easyfund.entities.AuthenticationResponse;
+import tn.esprit.easyfund.entities.Token;
+import tn.esprit.easyfund.repositories.TokenRepository;
+import tn.esprit.easyfund.entities.TokenType;
 import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,24 +51,44 @@ public class AuthenticationService {
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(),
-            request.getPassword()
-        )
-    );
-    var user = repository.findByEmail(request.getEmail())
-        .orElseThrow();
-    var jwtToken = jwtService.generateToken((UserDetails) user);
-    var refreshToken = jwtService.generateRefreshToken((UserDetails) user);
-    revokeAllUserTokens(user);
-    saveUserToken(user, jwtToken);
-    return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
-            .refreshToken(refreshToken)
-        .build();
-  }
+    try {
+      authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(
+                      request.getEmail(),
+                      request.getPassword()
+              )
+      );
 
+      var user = repository.findByEmail(request.getEmail())
+              .orElseThrow();
+
+      // Check if the user is banned
+      if (user.isBanned()) {
+        return AuthenticationResponse.builder()
+                .errorMessage("You are banned. Please contact support for assistance.")
+                .build();
+      }
+
+      var jwtToken = jwtService.generateToken((UserDetails) user);
+      var refreshToken = jwtService.generateRefreshToken((UserDetails) user);
+      revokeAllUserTokens(user);
+      saveUserToken(user, jwtToken);
+
+      return AuthenticationResponse.builder()
+              .accessToken(jwtToken)
+              .refreshToken(refreshToken)
+              .build();
+    } catch (DisabledException e) {
+      return AuthenticationResponse.builder()
+              .errorMessage("User is banned")
+              .build();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return AuthenticationResponse.builder()
+              .errorMessage("Authentication failed. Please check your credentials.")
+              .build();
+    }
+  }
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()
         .user(user)

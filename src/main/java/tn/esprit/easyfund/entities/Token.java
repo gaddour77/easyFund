@@ -1,6 +1,5 @@
-package tn.esprit.easyfund.token;
+package tn.esprit.easyfund.entities;
 
-import tn.esprit.easyfund.entities.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

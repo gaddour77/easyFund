@@ -11,5 +11,7 @@ public interface IClaimServices {
     Claim updateClaim(Long claimId, Claim updatedClaim);
 
     void deleteClaim(Long claimId);
+    Claim assignClaimToAgent(Claim claim);
+
     //function
 }

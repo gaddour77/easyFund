@@ -1,6 +1,7 @@
 package tn.esprit.easyfund.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,7 @@ import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.security.Principal;
-import java.util.List;
+
 @Service
 public class UserServicesImpl implements IUserServices {
 
@@ -49,20 +50,21 @@ public class UserServicesImpl implements IUserServices {
 
     @Override
     public User banUser(Long userId) {
-        // Perform user ban logic
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(ChangeSetPersister.NotFoundException::new);
 
-        // Retrieve the user from the database
-        User existingUser = userRepository.findById(userId).orElse(null);
+            // Set isBanned to true
+            user.setBanned(true);
+            userRepository.save(user);
 
-        if (existingUser != null) {
-            // Set user status to BANNED
-            // existingUser.setUserStatus(UserStatus.BANNED);
-
-            // Save the updated user to the database
-            return userRepository.save(existingUser);
-        } else {
-            // Handle user not found
-            return null;
+            // Return the banned user
+            return user;
+        } catch (Exception e) {
+            // Handle exceptions (log or perform other actions)
+            e.printStackTrace();
+            // You may throw a custom exception or handle it based on your needs
+            return null; // Return null or throw a specific exception based on your error-handling strategy
         }
     }
 

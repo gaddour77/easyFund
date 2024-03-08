@@ -1,7 +1,8 @@
-package tn.esprit.easyfund.token;
+package tn.esprit.easyfund.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import tn.esprit.easyfund.entities.Token;
 
 import java.util.List;
 import java.util.Optional;

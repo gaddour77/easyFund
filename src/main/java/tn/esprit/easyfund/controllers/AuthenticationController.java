@@ -1,4 +1,4 @@
-package tn.esprit.easyfund.auth;
+package tn.esprit.easyfund.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tn.esprit.easyfund.entities.AuthenticationRequest;
+import tn.esprit.easyfund.entities.AuthenticationResponse;
+import tn.esprit.easyfund.services.AuthenticationService;
+import tn.esprit.easyfund.entities.RegisterRequest;
 
 import java.io.IOException;
 
