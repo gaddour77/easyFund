@@ -6,21 +6,30 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import tn.esprit.easyfund.entities.Offer;
-import tn.esprit.easyfund.entities.OfferCategory;
-import tn.esprit.easyfund.entities.OfferStatus;
-import tn.esprit.easyfund.entities.WebSite;
+import tn.esprit.easyfund.entities.*;
+import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Row;
 
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @AllArgsConstructor
 @Service
 public class OfferServicesImpl implements IOfferServices{
  private IOfferRepositories offerRepositories;
+ private IFinancingRequestRepository financingRequestRepository;
 
     @Override
     public Offer addOffer(Offer offer) {
@@ -54,9 +63,10 @@ public class OfferServicesImpl implements IOfferServices{
         List<Offer> offerList = new ArrayList<>();
         return offerList;
     }
+
     public List<Offer> addScrap(){
         List<Offer> scrapOffers = new ArrayList<>();
-        //partie webscrap
+        //les sites (urls,balise,nom,prix)
         WebSite jumia = new WebSite("https://www.jumia.com.tn/catalog/?q=ordinateur%2Bportable","a.core","h3.name","div.prc");
         WebSite tunisianet = new WebSite("https://www.tunisianet.com.tn/301-pc-portable-tunisie","div.thumbnail-container.text-xs-center","div.wb-product-desc.product-description.col-lg-5.col-xl-5.col-md-6.col-sm-6.col-xs-6","span.price");
         WebSite myTek = new WebSite("https://www.mytek.tn/catalogsearch/result/?q=offre","li.item.product.product-item","div.prdtBILDetails","span.special-price");
@@ -70,6 +80,7 @@ public class OfferServicesImpl implements IOfferServices{
             try {
                 Connection con = Jsoup.connect(webSite.getUrl());
                 Document doc = con.get();
+                //teste de connection
                 if(con.response().statusCode()==200){
                     System.out.println(webSite.getUrl() + "trouvé");
                 }
@@ -94,7 +105,7 @@ public class OfferServicesImpl implements IOfferServices{
                             String k = price.replaceAll("[^0-9]","");
                            Long p = Long.parseLong(k);
 
-                            Offer offer = new Offer(name.substring(0, Math.min(name.length(), 50)),webSite.getUrl(),p,offerStatus,category);
+                            Offer offer = new Offer(name.substring(0, Math.min(name.length(), 100)),webSite.getUrl(),p,offerStatus,category);
                             scrapOffers.add(offer);
                         }
 
@@ -110,17 +121,34 @@ public class OfferServicesImpl implements IOfferServices{
 
         //partie valide
         List<Offer> offerList = new ArrayList<>();
-        for(Offer offer : scrapOffers){
+       // List<Offer> exo =new ArrayList<>();
 
-            Offer   existingOffer = offerRepositories.findByOfferCategoryAndOfferDescriptionAndOfferLink(offer.getOfferCategory(), offer.getOfferDescription(),offer.getOfferLink());
+        for(Offer offer : scrapOffers){
+            Offer   existingOffer = offerRepositories.findTopByOfferCategoryAndOfferDescriptionAndOfferLink(offer.getOfferCategory(), offer.getOfferDescription(),offer.getOfferLink());
+           // List<Offer>  exo = offerRepositories.findByOfferCategoryAndOfferDescriptionAndOfferLink(offer.getOfferCategory(), offer.getOfferDescription(),offer.getOfferLink());
+
            if(existingOffer==null){
 
               //offerRepositories.save(offer);
                offerList.add(offer);
+           }else if(existingOffer.getOfferPrice()!=offer.getOfferPrice()){
+               existingOffer.setOfferPrice(offer.getOfferPrice());
+               offerRepositories.save(existingOffer);
            }
 
         }
                return offerRepositories.saveAll(offerList);
     }
 
+    public FinancingRequest affecter(Long idO , Long fR){
+        Offer offer = offerRepositories.findById(idO).orElse(null);
+        FinancingRequest financingRequest = financingRequestRepository.findById(fR).orElse(null);
+        financingRequest.setOffer(offer);
+        return financingRequestRepository.save(financingRequest);
+    }
+    public List<FinancingRequest> financingRequests(Long id){
+        Offer offer = offerRepositories.findById(id).orElse(null);
+        List<FinancingRequest> financingRequests = financingRequestRepository.findByOffer(offer.getOffreId());
+       return financingRequests;
+    }
 }
