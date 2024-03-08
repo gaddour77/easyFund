@@ -1,5 +1,9 @@
 package tn.esprit.easyfund.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 public class Offer implements Serializable {
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long offreId;
@@ -26,8 +31,9 @@ public class Offer implements Serializable {
     private OfferStatus offerStatus;
     @Enumerated(EnumType.STRING)
     private  OfferCategory offerCategory;
-
-    @OneToMany(cascade = CascadeType.ALL ,mappedBy = "offer")
+    @JsonIgnoreProperties
+    @JsonManagedReference
+    @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "offer")
     private Set<FinancingRequest> financingRequests;
     public Offer(@NonNull String offerDescription, @NonNull String offerLink, @NonNull float offerPrice, @NonNull OfferStatus offerStatus, OfferCategory offerCategory) {
         this.offerDescription = offerDescription;

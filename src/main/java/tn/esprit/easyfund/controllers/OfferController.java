@@ -3,10 +3,12 @@ package tn.esprit.easyfund.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.services.OfferServicesImpl;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -41,4 +43,12 @@ public class OfferController {
     }
     @PostMapping("/scrap")
     public List<Offer> scrap(){return offerServices.addScrap();}
+    @PutMapping("/affectation/{ido}/{idf}")
+    public FinancingRequest affectation(@PathVariable Long ido,@PathVariable Long idf){
+        return offerServices.affecter(ido, idf);
+    }
+    @GetMapping("/getfinancing/{id}")
+    public List<FinancingRequest> financingRequests(@PathVariable Long id){
+        return offerServices.financingRequests(id);
+    }
 }
