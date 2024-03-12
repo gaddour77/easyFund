@@ -1,10 +1,12 @@
 package tn.esprit.easyfund.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.Claim;
+import tn.esprit.easyfund.entities.ClaimStatus;
 import tn.esprit.easyfund.entities.Role;
 import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IClaimRepository;
@@ -26,8 +28,8 @@ public class ClaimServicesImpl implements IClaimServices{
     }
 
     @Override
-    public List<Claim> getAllClaims() {
-        return claimRepository.findAll();
+    public List<Claim> getAllOpenClaims() {
+        return claimRepository.getAllOpenClaimsByClaimStatus(ClaimStatus.OPEN);
     }
 
     @Override
@@ -43,12 +45,12 @@ public class ClaimServicesImpl implements IClaimServices{
 
         // Set the user for the claim
         claim.setUser(user);
+        claim.setClaimStatus(ClaimStatus.OPEN);
 
         // Assign the claim to an agent
-        assignClaimToAgent(claim);
+        return assignClaimToAgent(claim);
 
-        // Save the claim
-        return claimRepository.save(claim);
+
     }
     @Override
     public Claim updateClaim(Long claimId, Claim updatedClaim) {
@@ -75,15 +77,57 @@ public class ClaimServicesImpl implements IClaimServices{
 
     @Override
     public Claim assignClaimToAgent(Claim claim) {
-        // Find the agent with the least open claims or the agent with the smallest ID if none have open claims
+        // Find the agent with the least open claims
         User agentWithLeastOpenClaims = findAgentWithLeastOpenClaims()
                 .orElse(findAgentWithSmallestId());
 
-        // Assign the claim to the agent
-        claim.setAgent(agentWithLeastOpenClaims);
+        // If there are multiple agents with the same number of open claims, choose the one with the smallest ID
+        if (agentWithLeastOpenClaims != null) {
+            User agentWithSmallestId = findAgentWithSmallestId().orElse(null);
+
+            if (agentWithSmallestId != null) {
+                // Compare the counts and IDs
+                long leastOpenClaimsCount = countOpenClaims(agentWithLeastOpenClaims);
+                long smallestIdClaimsCount = countOpenClaims(agentWithSmallestId);
+
+                if (leastOpenClaimsCount < smallestIdClaimsCount) {
+                    claim.setAgent(agentWithLeastOpenClaims);
+                } else {
+                    claim.setAgent(agentWithSmallestId);
+                }
+            } else {
+                claim.setAgent(agentWithLeastOpenClaims);
+            }
+        }
 
         // Save the updated claim
         return claimRepository.save(claim);
+    }
+
+    private long countOpenClaims(User agent) {
+        // Count the number of open claims for a specific agent
+        return claimRepository.countByAgentAndClaimStatus(agent, ClaimStatus.OPEN);
+    }
+
+    @Override
+    public List<Claim> getClaimsAssignedToAgent() {
+        // Get the authentication object from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Ensure the user is authenticated and has a valid principal
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+            // Retrieve the currently authenticated agent
+            User agent = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+            // Retrieve claims assigned to the agent
+            return claimRepository.findByAgent(agent);
+        } else {
+            // Handle the case where the user is not authenticated or has an invalid principal
+            throw new RuntimeException("Invalid authentication or principal");
+        }
     }
 
     private Optional<User> findAgentWithLeastOpenClaims() {

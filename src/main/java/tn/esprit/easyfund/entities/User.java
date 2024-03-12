@@ -32,6 +32,7 @@ public class User implements UserDetails {
     @NonNull
     private String lastname;
     @NonNull
+    @Column(unique = true)
     private String email;
     @NonNull
     private String password;
@@ -99,5 +100,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public User orElse(Object o) {
+        return null ;
     }
 }

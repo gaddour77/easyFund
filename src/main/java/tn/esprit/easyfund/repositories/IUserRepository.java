@@ -15,7 +15,7 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     List<User> findAgentsWithOpenClaims();
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.assignedClaims c WHERE u.role = 'AGENT' AND c.claimStatus = 'OPEN' " +
-            "GROUP BY u ORDER BY COUNT(c) ASC")
+            " ORDER BY COUNT(c) ASC LIMIT 1")
     User findAgentWithLeastOpenClaims();
     Optional<User> findTopByRoleOrderByUserIdAsc(Role role);
 }

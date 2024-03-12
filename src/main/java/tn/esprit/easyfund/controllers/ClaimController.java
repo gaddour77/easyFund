@@ -5,17 +5,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.Claim;
+import tn.esprit.easyfund.entities.User;
+import tn.esprit.easyfund.repositories.IUserRepository;
 import tn.esprit.easyfund.services.IClaimServices;
 
 import java.util.List;
+import java.util.Optional;
 
 
-    @RestController
+@RestController
     @RequestMapping("/api/claims")
     public class ClaimController {
 
         @Autowired
         private IClaimServices claimService;
+    @Autowired
+    private IUserRepository userRepository;
 
         @GetMapping("/{claimId}")
         public ResponseEntity<Claim> getClaimById(@PathVariable Long claimId) {
@@ -24,8 +29,8 @@ import java.util.List;
         }
 
         @GetMapping
-        public ResponseEntity<List<Claim>> getAllClaims() {
-            List<Claim> claims = claimService.getAllClaims();
+        public ResponseEntity<List<Claim>> getAllOpenClaims() {
+            List<Claim> claims = claimService.getAllOpenClaims();
             return ResponseEntity.ok(claims);
         }
 
@@ -51,6 +56,18 @@ import java.util.List;
             claimService.deleteClaim(claimId);
             return ResponseEntity.noContent().build();
         }
+
+        @GetMapping("/assigned-to-agent")
+        public List<Claim> getClaimsAssignedToAgent() {
+            try {
+                // Call the service method to get claims assigned to the agent
+                return claimService.getClaimsAssignedToAgent();
+            } catch (Exception e) {
+                // Handle exceptions and return an appropriate response
+                return (List<Claim>) ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
+        }
+
     }
 
 
