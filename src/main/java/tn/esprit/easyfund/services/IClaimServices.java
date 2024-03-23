@@ -6,13 +6,14 @@ import java.util.List;
 
 public interface IClaimServices {
     Claim getClaimById(Long claimId);
-    List<Claim> getAllOpenClaims();
+    List<Claim> getAllPendingClaims();
     Claim saveClaim(Claim claim);
     Claim updateClaim(Long claimId, Claim updatedClaim);
 
     void deleteClaim(Long claimId);
-    Claim assignClaimToAgent(Claim claim);
+
     List<Claim> getClaimsAssignedToAgent();
+    void takeClaim(Long claimId);
 
     //function
 }

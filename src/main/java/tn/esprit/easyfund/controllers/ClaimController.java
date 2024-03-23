@@ -5,12 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.Claim;
-import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IUserRepository;
 import tn.esprit.easyfund.services.IClaimServices;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -30,7 +28,7 @@ import java.util.Optional;
 
         @GetMapping
         public ResponseEntity<List<Claim>> getAllOpenClaims() {
-            List<Claim> claims = claimService.getAllOpenClaims();
+            List<Claim> claims = claimService.getAllPendingClaims();
             return ResponseEntity.ok(claims);
         }
 
@@ -67,6 +65,17 @@ import java.util.Optional;
                 return (List<Claim>) ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
             }
         }
+    @PostMapping("/{claimId}/take")
+    public ResponseEntity<String> takeClaim(@PathVariable Long claimId) {
+        try {
+            // Call the service method to allow the agent to take the claim
+            claimService.takeClaim(claimId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            // Handle exceptions and return an appropriate response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
     }
 

@@ -17,6 +17,8 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Claim {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long claimId;
@@ -30,10 +32,7 @@ public class Claim {
     @Enumerated(EnumType.STRING)
     private ClaimStatus claimStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "agent_id")
-    @JsonIgnore
-    private User agent;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -43,4 +42,16 @@ public class Claim {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt = new Date();
+    @ManyToOne
+    @JoinColumn(name = "agent_id")
+    @JsonIgnore
+    private User agent;
+    public Claim(Long claimId, String description, ClaimType claimType, ClaimStatus claimStatus, User user, Date createdAt) {
+        this.claimId = claimId;
+        this.description = description;
+        this.claimType = claimType;
+        this.claimStatus = claimStatus;
+        this.user = user;
+        this.createdAt = createdAt;
+    }
 }

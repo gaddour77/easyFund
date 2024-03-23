@@ -31,6 +31,7 @@ public class AuthenticationService {
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final IProfileServices profileServices;
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
@@ -43,6 +44,7 @@ public class AuthenticationService {
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken((UserDetails) user);
     var refreshToken = jwtService.generateRefreshToken((UserDetails) user);
+    profileServices.createProfileForUser(savedUser);
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
         .accessToken(jwtToken)

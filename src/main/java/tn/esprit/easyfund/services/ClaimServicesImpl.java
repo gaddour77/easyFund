@@ -13,6 +13,7 @@ import tn.esprit.easyfund.repositories.IClaimRepository;
 import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -28,8 +29,8 @@ public class ClaimServicesImpl implements IClaimServices{
     }
 
     @Override
-    public List<Claim> getAllOpenClaims() {
-        return claimRepository.getAllOpenClaimsByClaimStatus(ClaimStatus.OPEN);
+    public List<Claim> getAllPendingClaims() {
+        return claimRepository.getAllOpenClaimsByClaimStatus(ClaimStatus.PENDING);
     }
 
     @Override
@@ -45,10 +46,10 @@ public class ClaimServicesImpl implements IClaimServices{
 
         // Set the user for the claim
         claim.setUser(user);
-        claim.setClaimStatus(ClaimStatus.OPEN);
+        claim.setClaimStatus(ClaimStatus.PENDING);
 
         // Assign the claim to an agent
-        return assignClaimToAgent(claim);
+        return claimRepository.save(claim);
 
 
     }
@@ -76,40 +77,6 @@ public class ClaimServicesImpl implements IClaimServices{
     }
 
     @Override
-    public Claim assignClaimToAgent(Claim claim) {
-        // Find the agent with the least open claims
-        User agentWithLeastOpenClaims = findAgentWithLeastOpenClaims()
-                .orElse(findAgentWithSmallestId());
-
-        // If there are multiple agents with the same number of open claims, choose the one with the smallest ID
-        if (agentWithLeastOpenClaims != null) {
-            User agentWithSmallestId = findAgentWithSmallestId().orElse(null);
-
-            if (agentWithSmallestId != null) {
-                // Compare the counts and IDs
-                long leastOpenClaimsCount = countOpenClaims(agentWithLeastOpenClaims);
-                long smallestIdClaimsCount = countOpenClaims(agentWithSmallestId);
-
-                if (leastOpenClaimsCount < smallestIdClaimsCount) {
-                    claim.setAgent(agentWithLeastOpenClaims);
-                } else {
-                    claim.setAgent(agentWithSmallestId);
-                }
-            } else {
-                claim.setAgent(agentWithLeastOpenClaims);
-            }
-        }
-
-        // Save the updated claim
-        return claimRepository.save(claim);
-    }
-
-    private long countOpenClaims(User agent) {
-        // Count the number of open claims for a specific agent
-        return claimRepository.countByAgentAndClaimStatus(agent, ClaimStatus.OPEN);
-    }
-
-    @Override
     public List<Claim> getClaimsAssignedToAgent() {
         // Get the authentication object from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -129,14 +96,27 @@ public class ClaimServicesImpl implements IClaimServices{
             throw new RuntimeException("Invalid authentication or principal");
         }
     }
+    @Override
+    public void takeClaim(Long claimId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User agent = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new NoSuchElementException("Authenticated user not found"));
 
-    private Optional<User> findAgentWithLeastOpenClaims() {
-        return Optional.ofNullable(userRepository.findAgentWithLeastOpenClaims());
+            Claim claim = claimRepository.findById(claimId)
+                    .orElseThrow(() -> new NoSuchElementException("Claim not found"));
+
+            if (claim.getClaimStatus() == ClaimStatus.PENDING) {
+                claim.setClaimStatus(ClaimStatus.OPEN);
+                claim.setAgent(agent);
+                claimRepository.save(claim);
+            } else {
+                throw new RuntimeException("Claim is not pending");
+            }
+        } else {
+            throw new NoSuchElementException("Invalid authentication or principal");
+        }
     }
 
-    private User findAgentWithSmallestId() {
-        // Find the agent with the smallest ID
-        return userRepository.findTopByRoleOrderByUserIdAsc(Role.AGENT)
-                .orElseThrow(() -> new RuntimeException("No agents found"));
-    }
 }
