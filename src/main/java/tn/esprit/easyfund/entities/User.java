@@ -3,6 +3,7 @@ package tn.esprit.easyfund.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -33,11 +35,15 @@ public class User implements UserDetails {
     private String lastname;
     @NonNull
     @Column(unique = true)
+    @Email
     private String email;
     @NonNull
     private String password;
 
     private Long cin;
+    private String phoneNumber;
+
+
 
     private LocalDate dateOfBirth;
 
@@ -64,6 +70,13 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
     private boolean isBanned ;
+    private String validationCode;
+    private LocalDateTime validationCodeTimestamp;
+
+
+    @Enumerated(EnumType.STRING)
+    private ValidationMethod validationMethod;
+
    /* @ManyToMany
     @JoinTable(
             name = "user_interest",

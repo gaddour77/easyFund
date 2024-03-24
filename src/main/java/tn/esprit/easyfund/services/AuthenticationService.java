@@ -2,14 +2,9 @@ package tn.esprit.easyfund.services;
 
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
-import tn.esprit.easyfund.entities.RegisterRequest;
+import tn.esprit.easyfund.entities.*;
 import tn.esprit.easyfund.config.JwtService;
-import tn.esprit.easyfund.entities.AuthenticationRequest;
-import tn.esprit.easyfund.entities.AuthenticationResponse;
-import tn.esprit.easyfund.entities.Token;
 import tn.esprit.easyfund.repositories.TokenRepository;
-import tn.esprit.easyfund.entities.TokenType;
-import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +30,9 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
   private final IProfileServices profileServices;
+  private final IEmailService emailService; // Assuming you have an EmailService
+  private final ISmsService smsService; // Assuming you have an SmsService
+
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
@@ -138,6 +139,91 @@ public class AuthenticationService {
                 .build();
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
+    }
+  }
+  public void sendValidationCode(String email, ValidationMethod validationMethod) {
+    // Generate a validation code
+    String validationCode = generateValidationCode();
+
+    // Store validation code and timestamp in user entity
+    Optional<User> optionalUser = repository.findByEmail(email);
+    if (optionalUser.isPresent()) {
+      User user = optionalUser.get();
+      user.setValidationCode(validationCode);
+      user.setValidationCodeTimestamp(LocalDateTime.now()); // Store current timestamp
+      repository.save(user);
+
+      // Send the validation code based on the chosen method
+      if (validationMethod == ValidationMethod.EMAIL) {
+        sendValidationCodeByEmail(email, validationCode);
+      } else if (validationMethod == ValidationMethod.SMS) {
+        sendValidationCodeBySms(user.getPhoneNumber(), validationCode);
+      }
+    } else {
+      throw new RuntimeException("User not found");
+    }
+  }
+
+  private String generateValidationCode() {
+    // Generate a random 6-digit validation code
+    Random random = new Random();
+    int validationCode = 100000 + random.nextInt(900000);
+    return String.valueOf(validationCode);
+  }
+
+  private void sendValidationCodeByEmail(String email, String validationCode) {
+    // Send an email with the validation code
+    String subject = "Forgot Password Validation Code";
+    String message = "Your validation code is: " + validationCode;
+    emailService.sendEmail(email, subject, message);
+  }
+
+  private void sendValidationCodeBySms(String phoneNumber, String validationCode) {
+    // Send an SMS with the validation code
+    String message = "Your validation code is: " + validationCode;
+    smsService.sendSms(phoneNumber, message);
+  }
+
+  public boolean verifyValidationCode(String email, String validationCode) {
+    // Retrieve user by email
+    Optional<User> optionalUser = repository.findByEmail(email);
+    if (optionalUser.isPresent()) {
+      User user = optionalUser.get();
+
+      // Check if the validation code matches
+      if (user.getValidationCode().equals(validationCode)) {
+        // Check if the code has expired (2 minutes)
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime codeTimestamp = user.getValidationCodeTimestamp();
+        if (currentTime.minusMinutes(2).isBefore(codeTimestamp)) {
+          // Code is valid and has not expired
+          // Clear the validation code and timestamp
+          user.setValidationCode(null);
+          user.setValidationCodeTimestamp(null);
+          repository.save(user);
+          return true;
+        } else {
+          // Code has expired
+          // Optionally, handle expired code (e.g., return false or throw an exception)
+          return false;
+        }
+      }
+    }
+    return false; // Validation code is invalid
+  }
+
+
+  public void resetPassword(String email, String newPassword) {
+    // Retrieve user by email
+    Optional<User> optionalUser = repository.findByEmail(email);
+    if (optionalUser.isPresent()) {
+      User user = optionalUser.get();
+
+      // Set the new password and save the user
+      user.setPassword(passwordEncoder.encode(newPassword));
+      repository.save(user);
+    } else {
+      throw new RuntimeException("User not found");
     }
   }
 }

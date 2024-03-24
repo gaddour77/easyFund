@@ -4,12 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.AuthenticationRequest;
 import tn.esprit.easyfund.entities.AuthenticationResponse;
+import tn.esprit.easyfund.entities.ValidationMethod;
 import tn.esprit.easyfund.services.AuthenticationService;
 import tn.esprit.easyfund.entities.RegisterRequest;
 
@@ -41,6 +39,36 @@ public class AuthenticationController {
       HttpServletResponse response
   ) throws IOException {
     service.refreshToken(request, response);
+  }
+  @PostMapping("/forgot-password/send-code")
+  public ResponseEntity<Void> sendValidationCode(
+          @RequestParam(value = "email") String email,
+          @RequestParam(value = "validationMethod") ValidationMethod validationMethod
+  ) {
+    service.sendValidationCode(email, validationMethod);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/forgot-password/verify-code")
+  public ResponseEntity<Void> verifyValidationCode(
+          @RequestParam (value = "email") String email,
+          @RequestParam (value = "validationCode")String validationCode
+  ) {
+    boolean isValid = service.verifyValidationCode(email, validationCode);
+    if (isValid) {
+      return ResponseEntity.ok().build();
+    } else {
+      return ResponseEntity.badRequest().build();
+    }
+  }
+
+  @PostMapping("/forgot-password/reset-password")
+  public ResponseEntity<Void> resetPassword(
+          @RequestParam String email,
+          @RequestParam String newPassword
+  ) {
+    service.resetPassword(email, newPassword);
+    return ResponseEntity.ok().build();
   }
 
 
