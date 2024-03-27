@@ -49,26 +49,14 @@ public class AuthenticationController {
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/forgot-password/verify-code")
-  public ResponseEntity<Void> verifyValidationCode(
-          @RequestParam (value = "email") String email,
-          @RequestParam (value = "validationCode")String validationCode
-  ) {
-    boolean isValid = service.verifyValidationCode(email, validationCode);
-    if (isValid) {
-      return ResponseEntity.ok().build();
-    } else {
-      return ResponseEntity.badRequest().build();
-    }
-  }
-
-  @PostMapping("/forgot-password/reset-password")
-  public ResponseEntity<Void> resetPassword(
+  @PostMapping("/forgot-password/reset")
+  public ResponseEntity<String> resetPassword(
           @RequestParam String email,
+          @RequestParam String validationCode,
           @RequestParam String newPassword
   ) {
-    service.resetPassword(email, newPassword);
-    return ResponseEntity.ok().build();
+    service.resetPassword(email, validationCode, newPassword);
+    return ResponseEntity.ok("Password reset successful");
   }
 
 

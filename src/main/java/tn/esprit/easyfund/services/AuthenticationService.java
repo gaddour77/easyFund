@@ -30,8 +30,8 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
   private final IProfileServices profileServices;
-  private final IEmailService emailService; // Assuming you have an EmailService
-  private final ISmsService smsService; // Assuming you have an SmsService
+  private final IEmailService emailService;
+  private final ISmsService smsService;
 
 
   public AuthenticationResponse register(RegisterRequest request) {
@@ -184,44 +184,30 @@ public class AuthenticationService {
     smsService.sendSms(phoneNumber, message);
   }
 
-  public boolean verifyValidationCode(String email, String validationCode) {
+  public void resetPassword(String email, String validationCode, String newPassword) {
     // Retrieve user by email
     Optional<User> optionalUser = repository.findByEmail(email);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
 
       // Check if the validation code matches
-      if (user.getValidationCode().equals(validationCode)) {
+      if (user.getValidationCode() != null && user.getValidationCode().equals(validationCode)) {
         // Check if the code has expired (2 minutes)
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime codeTimestamp = user.getValidationCodeTimestamp();
         if (currentTime.minusMinutes(2).isBefore(codeTimestamp)) {
           // Code is valid and has not expired
-          // Clear the validation code and timestamp
+          // Set the new password and clear the validation code and timestamp
+          user.setPassword(passwordEncoder.encode(newPassword));
           user.setValidationCode(null);
           user.setValidationCodeTimestamp(null);
           repository.save(user);
-          return true;
         } else {
-          // Code has expired
-          // Optionally, handle expired code (e.g., return false or throw an exception)
-          return false;
+          throw new RuntimeException("Validation code has expired");
         }
+      } else {
+        throw new RuntimeException("Invalid validation code");
       }
-    }
-    return false; // Validation code is invalid
-  }
-
-
-  public void resetPassword(String email, String newPassword) {
-    // Retrieve user by email
-    Optional<User> optionalUser = repository.findByEmail(email);
-    if (optionalUser.isPresent()) {
-      User user = optionalUser.get();
-
-      // Set the new password and save the user
-      user.setPassword(passwordEncoder.encode(newPassword));
-      repository.save(user);
     } else {
       throw new RuntimeException("User not found");
     }

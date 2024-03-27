@@ -17,11 +17,7 @@ public class UserController {
     @Autowired
     private IUserServices userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        User newUser = userService.registerUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-    }
+
 
     @PutMapping("/update/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
