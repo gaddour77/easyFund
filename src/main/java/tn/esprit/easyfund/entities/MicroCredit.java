@@ -1,48 +1,39 @@
 package tn.esprit.easyfund.entities;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import java.time.LocalDate;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Getter
 @Setter
-@Table(name = "MICRO_CREDIT")
 @AllArgsConstructor
 @NoArgsConstructor
+
+@Table(name = "MICRO_CREDITS")
 @Entity
-public  class MicroCredit  {
-
+public  class MicroCredit implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long microCreditId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "micro_credits_seq")
+    private Long microCreditId;
 
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/mm/yyyy")
-    @NotNull(message = "Start Date cannot be empty")
-    private Date startDate;
-
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/mm/yyyy")
-    @NotNull(message = "Due Date cannot be empty")
-    private Date dueDate;
+    private LocalDate startDate;
+    private LocalDate dueDate;
 
     @Min(value = 2, message = "Period must be equal or greater than 2")
     @Max(value = 84, message = "Period must be equal or less than 48")
-    @NotNull(message = "Period cannot be empty")
     private Integer period;
 
-    //@Min(value = 100, message = "Amount must be equal or greater than 100 DTN")
-    //@Max(value = 100, message = "Amount must be equal or greater than 100 DTN")
+    @Enumerated(EnumType.STRING)
+    private TypePeriod typePeriod;
+
+    //@Min(value = 100, message = "Amount must be equal or greater than 100 TND")
+    //@Max(value = 100, message = "Amount must be equal or greater than 100 TND")
     @NotNull(message = "Credit Amount cannot be empty")
     private float creditAmmount;
 
@@ -54,11 +45,12 @@ public  class MicroCredit  {
     private CreditStatus creditStatus;
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Credit Type cannot be empty")
     private CreditType creditType;
 
-    @OneToOne()
+    /* @OneToOne()
     @NotNull(message = "Guarantor Account cannot be empty")
-    private Account guarantorAccount;
+    private Account guarantorAccount; */
 
     //@NotNull(message = "Guarantor Prof cannot be empty")
     private byte[] guarantorFile;
@@ -68,8 +60,11 @@ public  class MicroCredit  {
     // @Max(value = ,message = "Interest Rate can't be lower than 7")
     private float interestRate;
 
-    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
     private Account accountFK;
 
+//    public void setStatus(CreditStatus status) {
+//        this.creditStatus = status;
+//    }
 }

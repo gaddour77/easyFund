@@ -1,4 +1,4 @@
-package tn.esprit.easyfund.services.interfaces;
+package tn.esprit.easyfund.services;
 
 public interface IFinancingRequestServices {
 }
