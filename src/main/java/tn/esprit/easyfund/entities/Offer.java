@@ -31,8 +31,7 @@ public class Offer implements Serializable {
     private OfferStatus offerStatus;
     @Enumerated(EnumType.STRING)
     private  OfferCategory offerCategory;
-    @JsonIgnoreProperties
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "offer")
     private Set<FinancingRequest> financingRequests;
     public Offer(@NonNull String offerDescription, @NonNull String offerLink, @NonNull float offerPrice, @NonNull OfferStatus offerStatus, OfferCategory offerCategory) {

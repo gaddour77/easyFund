@@ -7,9 +7,8 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.QuoteMode;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -227,7 +226,47 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
             ops.close();
         }
     }
+    public void installmentPayment(long id) throws IOException {
+        FinancingRequest financingRequest =financingRequestRepository.findById(id).orElse(null);
+         String path = financingRequest.getExcel();
+         if (path!=null & financingRequest!=null){
+             POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(path));
+                     HSSFWorkbook wb = new HSSFWorkbook(fs);
+             HSSFSheet sheet = wb.getSheetAt(0);
+             HSSFRow row = null;
+             HSSFCell cell = null;
+             String status ="";
+             int rowNum =sheet.getLastRowNum();
+             int i=1;
+             boolean test =false;
+             while (i<=rowNum & test==false){
+                 row = sheet.getRow(i);
+                 cell = row.getCell((short) 6);
+                 status = cell.getStringCellValue();
+                 test=status.equals("encore");
+                 if(test){
+                     cell.setCellValue(new HSSFRichTextString("payer"));
+                 }
+                 i++;
+             }
 
+
+             /*HSSFSheet sheet = wb.getSheetAt(0);
+             HSSFRow row = sheet.getRow(1);
+             sheet.removeRow(row);
+             int lastRowNum = sheet.getLastRowNum();
+             for (int i = 2; i <= lastRowNum; i++) {
+                 sheet.shiftRows(i, lastRowNum, -1);
+             }*/
+
+
+             FileOutputStream fileOut = new FileOutputStream(path);
+             wb.write(fileOut);
+             fileOut.close();
+             wb.close();
+
+         }
+    }
 
     public void generateExcel(HttpServletResponse response) throws Exception {
 

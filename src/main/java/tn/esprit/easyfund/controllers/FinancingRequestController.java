@@ -44,7 +44,7 @@ public class FinancingRequestController {
         */
         ////test
         String uploadDir="C:/Users/GADOUR/IdeaProjects/easyFund/src/main/resources/excel/";
-        String name = financingRequest.getUser().getNom()+"easy"+financingRequest.getOffer().getOffreId()+".xls";
+        String name = financingRequest.getUser().getUserId()+"easy"+financingRequest.getOffer().getOffreId()+".xls";
           financingRequestServices.calculateAmortizationSchedule1(financingRequest,response,name);
           String excel = uploadDir+name;
           System.out.println(excel);
@@ -81,6 +81,10 @@ public class FinancingRequestController {
     @PutMapping("/update")
     public FinancingRequest update(@RequestBody FinancingRequest financingRequest){
         return financingRequestServices.update(financingRequest);
+    }
+    @GetMapping("/payment")
+    public void installmentPayment(long id) throws IOException{
+        financingRequestServices.installmentPayment(id);
     }
     @GetMapping("/excel")
     public void generateExcelReport(HttpServletResponse response) throws Exception{

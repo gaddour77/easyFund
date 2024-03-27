@@ -51,4 +51,9 @@ public class OfferController {
     public List<FinancingRequest> financingRequests(@PathVariable Long id){
         return offerServices.financingRequests(id);
     }
+    @DeleteMapping("/deletallOffers")
+    public String deleteAll(){
+        offerServices.deleteAll();
+        return "database cleanned";
+    }
 }
