@@ -1,6 +1,7 @@
 package tn.esprit.easyfund.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,10 +29,11 @@ public class FinancingRequest  implements Serializable {
     @NonNull
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
-    @JsonBackReference
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name ="offerId")
     private Offer offer;
+    @JsonIgnore
     @ManyToOne
     private User user;
 
