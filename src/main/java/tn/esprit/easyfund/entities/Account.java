@@ -20,6 +20,7 @@ public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
+
     private float balance;
     private Date creationDate;
     private Date updateDate;
@@ -31,8 +32,9 @@ public class Account implements Serializable {
     private AccountType accountType;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL ,mappedBy = "accountFK")
+    @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "accountFK")
     private Set<MicroCredit> microCredits;
+
     @OneToOne
     private User user;
 }

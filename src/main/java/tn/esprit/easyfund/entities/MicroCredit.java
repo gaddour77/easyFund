@@ -18,8 +18,9 @@ import java.io.Serializable;
 @Table(name = "MICRO_CREDITS")
 @Entity
 public  class MicroCredit implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "micro_credits_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long microCreditId;
 
     private LocalDate startDate;
@@ -60,11 +61,7 @@ public  class MicroCredit implements Serializable {
     // @Max(value = ,message = "Interest Rate can't be lower than 7")
     private float interestRate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id")
+    @ManyToOne
     private Account accountFK;
 
-//    public void setStatus(CreditStatus status) {
-//        this.creditStatus = status;
-//    }
 }

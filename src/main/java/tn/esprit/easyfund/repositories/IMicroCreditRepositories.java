@@ -11,12 +11,15 @@ import tn.esprit.easyfund.entities.CreditType;
 import java.util.List;
 
 @Repository
-public interface IMicroCreditRepositories extends JpaRepository<MicroCredit,Long> {
+public interface IMicroCreditRepositories extends JpaRepository<MicroCredit, Long> {
 
     @Query("SELECT credit from MicroCredit credit where credit.creditType = ?1")
     List<MicroCredit> retrieveCreditsByType(CreditType type);
 
     @Query("SELECT credit from MicroCredit credit where credit.creditStatus = ?1")
     List<MicroCredit> retrieveCreditsByStatus(CreditStatus status);
+
+    @Query("SELECT credit from MicroCredit credit where credit.accountFK.id = :accountId")
+    List<MicroCredit> retrieveCreditsByAccountID(Long accountId);
 
 }
