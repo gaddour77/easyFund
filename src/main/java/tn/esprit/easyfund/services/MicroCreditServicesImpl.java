@@ -28,8 +28,8 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
     @Override
     public MicroCredit findCreditById(Long id) {
         MicroCredit credit = microCreditRepositories.findById(id).orElse(null);
-        if (credit != null) {
-            System.out.println("Credit found... ID= " + credit.getMicroCreditId() + " ,Holder:" + credit.getAccountFK().getUser().getNom() + "  CIN : " + credit.getAccountFK().getUser().getCin());
+        if (microCreditRepositories.findById(id).isPresent()) {
+            System.out.println("Credit found");
         } else {
             System.out.println("Credit not found");
         }
@@ -41,6 +41,7 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
         List<MicroCredit> credits = microCreditRepositories.findAll();
         if (credits.isEmpty()) {
             System.out.println("No credits found");
+            return null;
         }
         return credits;
 
@@ -58,19 +59,27 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
         }
     }
 
-
     @Override
-    public MicroCredit updateCredit(MicroCredit credit) {
-        return microCreditRepositories.save(credit);
+    public MicroCredit updateCredit(MicroCredit microCredit) {
+        Long creditId = microCredit.getMicroCreditId();
+        if (creditId != null && microCreditRepositories.existsById(creditId)) {
+            System.out.println("Credit updated");
+            return microCreditRepositories.save(microCredit);
+        } else {
+            System.out.println("Credit not found");
+            return null;
+        }
     }
+
 
     @Override
     public MicroCredit updateStatus(Long id, CreditStatus status) {
-        MicroCredit credit = microCreditRepositories.findById(id).get();
+        MicroCredit credit = microCreditRepositories.findById(id).orElse(null);
         if (microCreditRepositories.findById(id).isPresent()) {
+            assert credit != null;
             credit.setCreditStatus(status);
             System.out.println("Credit Status Changed...");
-            return credit;
+            return microCreditRepositories.save(credit);
         } else {
             System.out.println("Credit not found");
         }
@@ -79,18 +88,31 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
 
     @Override
     public List<MicroCredit> getCreditsByStatus(CreditStatus status) {
-        return microCreditRepositories.retrieveCreditsByStatus(status);
-
+        List<MicroCredit> credits = microCreditRepositories.retrieveCreditsByStatus(status);
+        if (credits.isEmpty()) {
+            System.out.println("No credits found");
+            return null;
+        }
+        return credits;
     }
 
     @Override
     public List<MicroCredit> getCreditsByType(CreditType type) {
-        return microCreditRepositories.retrieveCreditsByType(type);
+        List<MicroCredit> credits = microCreditRepositories.retrieveCreditsByType(type);
+        if (credits.isEmpty()) {
+            System.out.println("No credits found");
+            return null;
+        }
+        return credits;
     }
 
     @Override
     public List<MicroCredit> getCreditByAccountId(Long id) {
-        return microCreditRepositories.retrieveCreditsByAccountID(id);
+        List<MicroCredit> credits = microCreditRepositories.retrieveCreditsByAccountID(id);
+        if (credits.isEmpty()) {
+            System.out.println("No credits found");
+            return null;
+        }
+        return credits;
     }
-
 }

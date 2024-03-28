@@ -10,9 +10,9 @@ public interface IMicroCreditService {
 
     MicroCredit createMicroCredit(MicroCredit microCredit);
 
-    List<MicroCredit> findAllCredits();
-
     MicroCredit findCreditById(Long id);
+
+    List<MicroCredit> findAllCredits();
 
     void deleteCredit(Long id);
 
