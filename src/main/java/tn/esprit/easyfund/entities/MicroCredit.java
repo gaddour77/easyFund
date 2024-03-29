@@ -49,6 +49,9 @@ public  class MicroCredit implements Serializable {
     @NotNull(message = "Credit Type cannot be empty")
     private CreditType creditType;
 
+//    @NotNull(message = "Payed Amount cannot be empty")
+    private Double payedAmount;
+
     /* @OneToOne()
     @NotNull(message = "Guarantor Account cannot be empty")
     private Account guarantorAccount; */

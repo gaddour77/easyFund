@@ -4,6 +4,7 @@ import tn.esprit.easyfund.entities.CreditStatus;
 import tn.esprit.easyfund.entities.CreditType;
 import tn.esprit.easyfund.entities.MicroCredit;
 
+import java.util.Hashtable;
 import java.util.List;
 
 public interface IMicroCreditService {
@@ -26,4 +27,11 @@ public interface IMicroCreditService {
     List<MicroCredit> getCreditsByType(CreditType type);
 
     List<MicroCredit> getCreditByAccountId(Long id);
+
+    List<Object> Simulation(double amount, int period,String typePeriod);
+    double scoreCredit(double amount,int period,String typePeriod);
+
+    double calculateInterest(double score);
+
+    List<Object> FailureToPay(long idCredit, int period, double interestAmount);
 }

@@ -3,6 +3,7 @@ package tn.esprit.easyfund.controllers;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import tn.esprit.easyfund.entities.CreditStatus;
 import tn.esprit.easyfund.entities.CreditType;
@@ -11,12 +12,13 @@ import tn.esprit.easyfund.entities.MicroCredit;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.services.MicroCreditServicesImpl;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Objects;
 
 
 @AllArgsConstructor
@@ -118,9 +120,37 @@ public class MicroCreditController {
         return ResponseEntity.ok(credits); // get successfully, return 200
     }
 
+    @GetMapping("simulator/{amount}/{period}/{typePeriod}")
+    public List<Object> Simulation(@PathVariable double amount, @PathVariable int period,@PathVariable String typePeriod ){
+        return microCreditService.Simulation(amount,period,typePeriod);
+    }
 
-    //////////////////////////////////////////////////////////////////
+    @PutMapping("calculateInterest/{score}")
+    public double calculateInterest(@PathVariable("score") double score){
+        return microCreditService.calculateInterest(score);
+    }
 
+    @GetMapping("FailureToPay/{idCredit}/{period}/{interestAmount}")
+    public List<Object> FailureToPay(@PathVariable long idCredit, @PathVariable int period, @PathVariable double interestAmount){
+        return microCreditService.FailureToPay(idCredit,period,interestAmount);
+    }
+
+
+    @GetMapping("/excel/{amount}/{period}/{typePeriod}")
+    public void exportToExcel(HttpServletResponse response, @PathVariable double amount, @PathVariable int period, @PathVariable String typePeriod) throws IOException {
+        response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=CreditSimulation_" + amount + "_" + typePeriod + "_" + period + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        List<Object> simulation = Simulation(amount, period, typePeriod);
+
+        CreditExcelExporter excelExporter = new CreditExcelExporter(simulation, period);
+        excelExporter.export(response);
+    }
 
 
 }
