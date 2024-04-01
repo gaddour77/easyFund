@@ -226,26 +226,32 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
             ops.close();
         }
     }
-    public void installmentPayment(long id) throws IOException {
+    public double installmentPayment(long id) throws IOException {
         FinancingRequest financingRequest =financingRequestRepository.findById(id).orElse(null);
          String path = financingRequest.getExcel();
+        double amount =0;
          if (path!=null & financingRequest!=null){
              POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(path));
                      HSSFWorkbook wb = new HSSFWorkbook(fs);
              HSSFSheet sheet = wb.getSheetAt(0);
              HSSFRow row = null;
              HSSFCell cell = null;
+             HSSFCell cellamount =null;
              String status ="";
              int rowNum =sheet.getLastRowNum();
              int i=1;
+
              boolean test =false;
              while (i<=rowNum & test==false){
                  row = sheet.getRow(i);
                  cell = row.getCell((short) 6);
+
                  status = cell.getStringCellValue();
                  test=status.equals("encore");
                  if(test){
                      cell.setCellValue(new HSSFRichTextString("payer"));
+                     cellamount = row.getCell((short) 4);
+                     amount = cellamount.getNumericCellValue();
                  }
                  i++;
              }
@@ -266,6 +272,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
              wb.close();
 
          }
+         return amount;
     }
 
     public void generateExcel(HttpServletResponse response) throws Exception {

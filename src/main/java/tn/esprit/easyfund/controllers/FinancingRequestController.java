@@ -56,6 +56,7 @@ public class FinancingRequestController {
     }
     @PostMapping("/addfinancings")
     public List<FinancingRequest> addfinancings(List<FinancingRequest> financingRequests){
+
         return financingRequestServices.addFinancings(financingRequests);
     }
     @GetMapping("/findfinancing/{id}")

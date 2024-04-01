@@ -29,11 +29,9 @@ public class FinancingRequest  implements Serializable {
     @NonNull
     @Enumerated(EnumType.STRING)
     private RequestStatus requestStatus;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name ="offerId")
     private Offer offer;
-    @JsonIgnore
     @ManyToOne
     private User user;
 
