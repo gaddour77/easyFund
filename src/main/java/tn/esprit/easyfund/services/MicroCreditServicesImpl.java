@@ -151,7 +151,7 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
                 break;
             default:
                 System.out.println("Invalid Type");
-                return simulation; // Return empty list for invalid type
+                return simulation;
         }
 
         // Calculate and add payment details for each period

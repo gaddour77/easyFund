@@ -6,9 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Font;
 
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +19,8 @@ public class CreditExcelExporter {
     private final List<Object> simulation;
     private XSSFSheet sheet;
 
-    public CreditExcelExporter(List<Object> simulation, int period) {
+
+    public CreditExcelExporter(List<Object> simulation) {
         this.simulation = simulation;
         workbook = new XSSFWorkbook();
     }

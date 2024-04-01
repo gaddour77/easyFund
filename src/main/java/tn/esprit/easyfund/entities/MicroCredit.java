@@ -27,14 +27,14 @@ public  class MicroCredit implements Serializable {
     private LocalDate dueDate;
 
     @Min(value = 2, message = "Period must be equal or greater than 2")
-    @Max(value = 84, message = "Period must be equal or less than 48")
+    @Max(value = 48, message = "Period must be equal or less than 48")
     private Integer period;
 
     @Enumerated(EnumType.STRING)
     private TypePeriod typePeriod;
 
-    //@Min(value = 100, message = "Amount must be equal or greater than 100 TND")
-    //@Max(value = 100, message = "Amount must be equal or greater than 100 TND")
+    @Min(value = 500, message = "Amount must be equal or greater than 100 TND")
+    @Max(value = 40000, message = "Amount must be equal or greater than 100 TND")
     @NotNull(message = "Credit Amount cannot be empty")
     private float creditAmmount;
 
