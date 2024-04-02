@@ -7,10 +7,11 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@ToString
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="Transaction")
+
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +28,9 @@ public class Transaction {
     @Column(name="Currency")
     private String currency;
     @Column(name="Trans_date")
-    private LocalDate  trans_date;
+    private LocalDate  trans_date= LocalDate.now();
     @Column(name="Trans_fee")
-    private int  trans_fee;
+    private float  trans_fee;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transType;
@@ -38,4 +39,21 @@ public class Transaction {
 
     @ManyToOne
     BankAccount bankAccount;
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "trans_id=" + trans_id +
+                ", amount=" + amount +
+                ", acc_from='" + acc_from + '\'' +
+                ", acc_to='" + acc_to + '\'' +
+                ", ref_number='" + ref_number + '\'' +
+                ", currency='" + currency + '\'' +
+                ", trans_date=" + trans_date +
+                ", trans_fee=" + trans_fee +
+                ", transType=" + transType +
+                ", stat=" + stat +
+                ", bankAccount=" + bankAccount +
+                '}';
+    }
 }

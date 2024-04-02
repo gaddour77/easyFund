@@ -8,6 +8,9 @@ public class EasyFundApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EasyFundApplication.class, args);
+
+
+
     }
 
 }
