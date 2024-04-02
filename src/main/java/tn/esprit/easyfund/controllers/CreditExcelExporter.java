@@ -13,6 +13,16 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.*;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import java.util.List;
+
+
 public class CreditExcelExporter {
 
     private final XSSFWorkbook workbook;
@@ -96,7 +106,7 @@ public class CreditExcelExporter {
         }
     }
 
-    public void export(HttpServletResponse response) throws IOException {
+    public void exportExcel(HttpServletResponse response) throws IOException {
         writeHeaderLine();
         writeDataLines();
         ServletOutputStream outputStream = response.getOutputStream();
@@ -105,4 +115,85 @@ public class CreditExcelExporter {
         workbook.close();
         outputStream.close();
     }
+
+    public void exportPDF(HttpServletResponse response) throws IOException {
+        Document document = new Document(PageSize.A4);
+        try {
+            PdfWriter.getInstance(document, response.getOutputStream());
+            document.open();
+
+            PdfPTable dataTable = createDataTable();
+            PdfPTable summaryTable = createSummaryTable();
+
+            document.add(new Paragraph("Credit Simulation Data"));
+            Paragraph spacer = new Paragraph("");
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            document.add(spacer);
+            document.add(dataTable);
+
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+
+            document.add(new Paragraph("Summary"));
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+            spacer.setSpacingBefore(20f); // Adjust spacing as needed
+
+            document.add(spacer);
+
+            document.add(summaryTable);
+
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } finally {
+            document.close();
+        }
+    }
+
+    private PdfPTable createDataTable() {
+        PdfPTable table = new PdfPTable(5);
+        addTableHeader(table);
+        int lastIndex = simulation.size() - 1;
+        for (int i = 0; i < lastIndex; i++) {
+            Object rowData = simulation.get(i);
+            if (rowData instanceof Map) {
+                Map<String, Double> dataMap = (Map<String, Double>) rowData;
+                for (Map.Entry<String, Double> entry : dataMap.entrySet()) {
+                    table.addCell(entry.getValue().toString());
+                }
+            }
+        }
+        return table;
+    }
+
+    private void addTableHeader(PdfPTable table) {
+        table.addCell("Amount Remaining");
+        table.addCell("Credit");
+        table.addCell("Interest Amount");
+        table.addCell("Bill payment (Tax excluded)");
+        table.addCell("Bill Payment (Tax Included) (Principal)");
+    }
+
+    private PdfPTable createSummaryTable() {
+        PdfPTable table = new PdfPTable(2);
+        table.addCell("Summary Data");
+        table.addCell("Value");
+
+        if (!simulation.isEmpty()) {
+            Object lastRow = simulation.get(simulation.size() - 1);
+            if (lastRow instanceof Map) {
+                Map<String, Double> dataMap = (Map<String, Double>) lastRow;
+                for (Map.Entry<String, Double> entry : dataMap.entrySet()) {
+                    table.addCell(entry.getKey());
+                    table.addCell(entry.getValue().toString());
+                }
+            }
+        }
+
+        return table;
+    }
+
 }

@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import tn.esprit.easyfund.entities.CreditStatus;
 import tn.esprit.easyfund.entities.CreditType;
 import tn.esprit.easyfund.entities.MicroCredit;
 
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.easyfund.entities.TypePeriod;
 import tn.esprit.easyfund.services.MicroCreditServicesImpl;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -148,7 +146,28 @@ public class MicroCreditController {
         if (simulationResponse.getStatusCode() == HttpStatus.OK) {
             List<Object> simulation = simulationResponse.getBody();
             CreditExcelExporter excelExporter = new CreditExcelExporter(simulation);
-            excelExporter.export(response);
+            excelExporter.exportExcel(response);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/pdf/{amount}/{period}/{typePeriod}")
+    public ResponseEntity<?> exportToPDF(HttpServletResponse response, @PathVariable double amount, @PathVariable int period, @PathVariable String typePeriod) throws IOException {
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=CreditSimulation_" + amount + "_" + typePeriod + "_" + period + ".pdf";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<List<Object>> simulationResponse = Simulation(amount, period, typePeriod);
+
+        if (simulationResponse.getStatusCode() == HttpStatus.OK) {
+            List<Object> simulation = simulationResponse.getBody();
+            CreditExcelExporter pdfExporter = new CreditExcelExporter(simulation);
+            pdfExporter.exportPDF(response);
         } else {
             return ResponseEntity.badRequest().build();
         }
