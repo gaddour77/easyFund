@@ -13,7 +13,7 @@ import com.twilio.type.PhoneNumber;
 public class SmsController {
 
     @GetMapping(value = "/sendSMS")
-    public ResponseEntity<String> sendSMS() {
+    public ResponseEntity<String> sendSMS(String message) {
         String twilioAccountSid = System.getenv("TWILIO_ACCOUNT_SID");
         String twilioAuthToken = System.getenv("TWILIO_AUTH_TOKEN");
 
@@ -23,7 +23,7 @@ public class SmsController {
 
         Twilio.init(twilioAccountSid, twilioAuthToken);
         Message.creator(new PhoneNumber("+21620955588"),
-                    new PhoneNumber("+19283251100"), "Hello from Twilio").create();
+                    new PhoneNumber("+19283251100"), message).create();
 
         return new ResponseEntity<String>("Message sent successfully", HttpStatus.OK);
     }

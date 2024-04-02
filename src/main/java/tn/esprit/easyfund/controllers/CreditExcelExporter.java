@@ -132,12 +132,6 @@ public class CreditExcelExporter {
             document.add(spacer);
             document.add(dataTable);
 
-            spacer.setSpacingBefore(20f); // Adjust spacing as needed
-            spacer.setSpacingBefore(20f); // Adjust spacing as needed
-            spacer.setSpacingBefore(20f); // Adjust spacing as needed
-            spacer.setSpacingBefore(20f); // Adjust spacing as needed
-            spacer.setSpacingBefore(20f); // Adjust spacing as needed
-
             document.add(new Paragraph("Summary"));
             spacer.setSpacingBefore(20f); // Adjust spacing as needed
             spacer.setSpacingBefore(20f); // Adjust spacing as needed
@@ -195,5 +189,8 @@ public class CreditExcelExporter {
 
         return table;
     }
+
+    // invoice generator
+
 
 }

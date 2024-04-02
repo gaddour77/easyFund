@@ -90,6 +90,7 @@ public class PayPalController {
     @RequestMapping(value = "/api/orders", method = RequestMethod.POST)
     @CrossOrigin
     public Object createOrder() {
+//        public Object createOrder(double amount) {
         String accessToken = generateAccessToken();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -99,9 +100,11 @@ public class PayPalController {
         headers.add("Accept", "application/json");
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        //JSON String
-        String requestJson = "{\"intent\":\"CAPTURE\",\"purchase_units\":[{\"amount\":{\"currency_code\":\"USD\",\"value\":\"100.00\"}}]}";
-        HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
+        // Create JSON request with parameters
+//        String requestJson = "{\"intent\":\"CAPTURE\",\"purchase_units\":[{\"amount\":{\"currency_code\":\" USD\",\"value\":" + amount + "}}]}";
+        String requestJson = "{\"intent\":\"CAPTURE\",\"purchase_units\":[{\"amount\":{\"currency_code\":\"USD\",\"value\":100}}]}";
+
+        HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
 
         ResponseEntity<Object> response = restTemplate.exchange(
                 BASE + "/v2/checkout/orders",
@@ -117,7 +120,5 @@ public class PayPalController {
             LOGGER.log(Level.INFO, "FAILED CAPTURING ORDER");
             return "Unavailable to get CAPTURE ORDER, STATUS CODE " + response.getStatusCode();
         }
-
     }
-
 }

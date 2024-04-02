@@ -3,7 +3,10 @@ package tn.esprit.easyfund.services;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import tn.esprit.easyfund.controllers.PayPalController;
+import tn.esprit.easyfund.controllers.SmsController;
 import tn.esprit.easyfund.entities.CreditStatus;
 import tn.esprit.easyfund.entities.CreditType;
 import tn.esprit.easyfund.entities.MicroCredit;
@@ -22,8 +25,16 @@ import java.util.Locale;
 public class MicroCreditServicesImpl implements IMicroCreditService {
 
     private static final DecimalFormat df = new DecimalFormat("0.00000", DecimalFormatSymbols.getInstance(Locale.US));
+
     @Autowired
     private IMicroCreditRepositories microCreditRepositories;
+
+    @Autowired
+    private SmsController smsController;
+
+    @Autowired
+    private PayPalController payPalController;
+
 
     @Override
     public MicroCredit createMicroCredit(MicroCredit microCredit) {
@@ -84,6 +95,7 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
         if (microCreditRepositories.findById(id).isPresent()) {
             assert credit != null;
             credit.setCreditStatus(status);
+            smsController.sendSMS("Credits Status Has been updated for credit N°"+credit.getMicroCreditId());
             System.out.println("Credit Status Changed...");
             return microCreditRepositories.save(credit);
         } else {
@@ -99,6 +111,7 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
             System.out.println("No credits found");
             return null;
         }
+
         return credits;
     }
 
@@ -169,10 +182,11 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
             totalInterest += interestAmount;
             credit -= billForOriginalAmount;
             totalBilling += monthlyPayment;
-
             payment.put("Bill Payment (Tax Included)", Double.parseDouble(df.format(monthlyPayment)));
             payment.put("Credit Amount", Double.parseDouble(df.format(amount))); // Credit remaining will be 0 in the last iteration
             payment.put("Amount Remaining", Double.parseDouble(df.format(credit))); // Credit remaining will be 0 in the last iteration
+            payment.put("Payment Link", Double.parseDouble(df.format(amount))); // Credit remaining will be 0 in the last iteration
+
             simulation.add(payment);
         }
         totalProfit = amount + totalInterest - amount;

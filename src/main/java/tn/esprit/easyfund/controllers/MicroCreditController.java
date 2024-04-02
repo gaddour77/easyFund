@@ -27,7 +27,6 @@ public class MicroCreditController {
 
     @Autowired
     private MicroCreditServicesImpl microCreditService;
-
     @PostMapping(path = "createCredit")
     public ResponseEntity<MicroCredit> createMicroCredit(@RequestBody MicroCredit microCredit) {
         MicroCredit credit = microCreditService.createMicroCredit(microCredit);
