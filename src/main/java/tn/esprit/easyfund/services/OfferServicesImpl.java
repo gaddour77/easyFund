@@ -120,7 +120,7 @@ public class OfferServicesImpl implements IOfferServices{
                             }
 
 
-                           Long p = Long.parseLong(k);
+                           Long p = Long.parseLong(k)/100;
 
                             Offer offer = new Offer(name.substring(0, Math.min(name.length(), 100)),webSite.getUrl(),p,offerStatus,category);
                             scrapOffers.add(offer);

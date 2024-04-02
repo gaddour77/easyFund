@@ -16,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
+import tn.esprit.easyfund.entities.RequestStatus;
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
 
@@ -34,7 +35,15 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     private IOfferRepositories offerRepositories;
 
     public FinancingRequest addFinancing(FinancingRequest financingRequest){
-        return financingRequestRepository.save(financingRequest);
+        List<FinancingRequest> fr = null;
+                fr =financingRequestRepository.findByUserIdAndOfferId(financingRequest.getUser().getUserId(),financingRequest.getOffer().getOffreId());
+       if (fr==null){
+           return financingRequestRepository.save(financingRequest);
+       }
+       return null;
+    }
+    public List<FinancingRequest> detect(FinancingRequest fr){
+        return financingRequestRepository.findByUserIdAndOfferId(fr.getUser().getUserId(),fr.getOffer().getOffreId());
     }
     public List<FinancingRequest> addFinancings(List<FinancingRequest> requests){
         return financingRequestRepository.saveAll(requests);
@@ -145,23 +154,38 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         LocalDate dateDebut = financingRequest.getDateFinancingRequest();
         LocalDate dateFin = financingRequest.getFinalDate();
 
-        double tauxInteretAnnuel = 5.6;
+        double tauxInteretAnnuel = 5;
         // Calcul de la période entre les deux dates
         Period period = Period.between(dateDebut, dateFin);
         System.out.println("period : "+period);
         int moisDifference = period.getYears() * 12 + period.getMonths();
+
         double soldeInitial = offer.getOfferPrice();
+        //taux d'interet
+        if(moisDifference>12){
+            int moissupp = moisDifference -12;
+            tauxInteretAnnuel += 0.1 *moissupp;
+        }
+        if (soldeInitial>1000){
+            double diff = tauxInteretAnnuel -1000;
+            int nb =(int) diff/300;
+            tauxInteretAnnuel += 0.3*nb;
+
+        }
+        System.out.println("taux d'intert:   "+tauxInteretAnnuel);
         double tauxInteretMensuel = tauxInteretAnnuel / 12 / 100;
         double paiementMensuel = offer.getOfferPrice() * (tauxInteretMensuel / (1 - Math.pow(1 + tauxInteretMensuel, -moisDifference)));
         System.out.println("id :"+paiementMensuel+tauxInteretAnnuel+tauxInteretMensuel+"mois :"+moisDifference+"dated"+dateDebut);
+
         for (int mois = 1; mois <= moisDifference; mois++) {
             Row ligne = feuille.createRow(mois);
+            LocalDate dateRemboursement = dateDebut.plusMonths(mois);
             double interets = soldeInitial * tauxInteretMensuel;
             double principal = paiementMensuel - interets;
             double soldeFinal = soldeInitial - principal;
             System.out.println("indicateur : "+mois+financingRequest.toString()+mois+interets+principal+soldeFinal);
 
-            ligne.createCell(0).setCellValue(mois);
+            ligne.createCell(0).setCellValue(String.valueOf(dateRemboursement));
             ligne.createCell(1).setCellValue(soldeInitial);
             ligne.createCell(2).setCellValue(interets);
             ligne.createCell(3).setCellValue(/*principal*/paiementMensuel);
@@ -301,6 +325,10 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         workbook.write(ops);
         workbook.close();
         ops.close();
+
+    }
+    public List<FinancingRequest> finbByStatus(RequestStatus status){
+        return financingRequestRepository.findByRequestStatus(status);
 
     }
 }

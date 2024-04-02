@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
+import tn.esprit.easyfund.entities.RequestStatus;
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.services.FinancingRequestServicesImpl;
 import tn.esprit.easyfund.services.IFinancingRequestServices;
@@ -43,9 +44,13 @@ public class FinancingRequestController {
         return financingRequestServices.addFinancing(financingRequest);
         */
         ////test
+        List<FinancingRequest> lfr = financingRequestServices.detect(financingRequest);
         String uploadDir="C:/Users/GADOUR/IdeaProjects/easyFund/src/main/resources/excel/";
         String name = financingRequest.getUser().getUserId()+"easy"+financingRequest.getOffer().getOffreId()+".xls";
-          financingRequestServices.calculateAmortizationSchedule1(financingRequest,response,name);
+        if (lfr==null){
+            financingRequestServices.calculateAmortizationSchedule1(financingRequest,response,name);
+        }
+
           String excel = uploadDir+name;
           System.out.println(excel);
           financingRequest.setExcel(excel);
@@ -72,7 +77,7 @@ public class FinancingRequestController {
         return financingRequestServices.findByOffer(id);
     }
     @GetMapping("/findbyuser/{id}")
-    public List<FinancingRequest> findByUser(long id){
+    public List<FinancingRequest> findByUser(@PathVariable  long id){
         return financingRequestServices.findByUser(id);
     }
     @DeleteMapping("/delete/{id}")
@@ -100,5 +105,9 @@ public class FinancingRequestController {
         financingRequestServices.generateExcel(response);
 
         response.flushBuffer();
+    }
+    @GetMapping("/findByStaus")
+    public List<FinancingRequest> findByStatus(RequestStatus status){
+        return financingRequestServices.finbByStatus(status);
     }
 }
