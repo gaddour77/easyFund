@@ -1,6 +1,10 @@
 package tn.esprit.easyfund.entities;
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -36,5 +40,5 @@ public class Transaction {
     private Status stat;
 
     @ManyToOne
-    Account Account;
+    tn.esprit.easyfund.entities.Account Account;
 }

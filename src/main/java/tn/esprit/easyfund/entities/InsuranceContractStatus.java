@@ -1,5 +1,5 @@
 package tn.esprit.easyfund.entities;
 
-public enum ClaimStatus {
+public enum InsuranceContractStatus {
     PENDING,OPEN,CLOSED,ARCHIVED
 }
