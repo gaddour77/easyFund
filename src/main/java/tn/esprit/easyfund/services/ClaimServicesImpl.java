@@ -7,14 +7,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.Claim;
 import tn.esprit.easyfund.entities.ClaimStatus;
-import tn.esprit.easyfund.entities.Role;
 import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IClaimRepository;
 import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class ClaimServicesImpl implements IClaimServices{

@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +41,9 @@ public class User implements UserDetails {
 
     private Long cin;
     private String phoneNumber;
+    private boolean twoFactorAuthEnabled;
+    private String twoFactorAuthSecret ;
+
 
 
 

@@ -1,6 +1,5 @@
 package tn.esprit.easyfund.entities;
 
-import tn.esprit.easyfund.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

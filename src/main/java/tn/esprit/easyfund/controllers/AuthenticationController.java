@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.AuthenticationRequest;
 import tn.esprit.easyfund.entities.AuthenticationResponse;
+import tn.esprit.easyfund.entities.RegisterRequest;
 import tn.esprit.easyfund.entities.ValidationMethod;
 import tn.esprit.easyfund.services.AuthenticationService;
-import tn.esprit.easyfund.entities.RegisterRequest;
 
 import java.io.IOException;
 
