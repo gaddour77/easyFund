@@ -1,6 +1,7 @@
 package tn.esprit.easyfund.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -41,8 +42,10 @@ public class User implements Serializable {
     private Role role;
     @OneToOne
     private Account account;
+    @JsonIgnore
     @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
+
 
 
 }
