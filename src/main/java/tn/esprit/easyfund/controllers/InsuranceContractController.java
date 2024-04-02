@@ -7,9 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import tn.esprit.easyfund.entities.Insurance;
+import tn.esprit.easyfund.entities.Claim;
 import tn.esprit.easyfund.entities.InsuranceContract;
 import tn.esprit.easyfund.services.IInsuranceContractService;
+
 
 
 @RestController
@@ -19,9 +20,11 @@ import tn.esprit.easyfund.services.IInsuranceContractService;
         @Autowired
         private IInsuranceContractService insuranceContractService;
 
-        @GetMapping("/getinsuranceContractsById/{insuranceContractId}")
-        public InsuranceContract InsuranceContractById(@PathVariable long id){
-            return insuranceContractService.getInsuranceContractById(id);
+
+        @GetMapping("/{insuranceContractId}")
+        public ResponseEntity<InsuranceContract> getInsuranceContractById(@PathVariable Long insuranceContractId) {
+            InsuranceContract insuranceContract = insuranceContractService.getInsuranceContractById(insuranceContractId);
+            return ResponseEntity.ok(insuranceContract);
         }
 
         @GetMapping
@@ -30,12 +33,14 @@ import tn.esprit.easyfund.services.IInsuranceContractService;
             return ResponseEntity.ok(insuranceContract);
         }
 
+
         @ResponseBody
         @PostMapping("/add")
         public ResponseEntity<InsuranceContract> saveInsuranceContract(@RequestBody InsuranceContract insuranceContract,  @RequestParam(name = "id") Long insuranceId) {
             InsuranceContract savedInsuranceContract = insuranceContractService.saveInsuranceContract(insuranceContract,insuranceId);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedInsuranceContract);
         }
+
         @PutMapping("/{insuranceContractId}")
         public ResponseEntity<InsuranceContract> updateInsuranceContract(@PathVariable Long insuranceContractId, @RequestBody InsuranceContract updatedInsuranceContract) {
             InsuranceContract updatedInsuranceContractData = insuranceContractService.updateInsuranceContract(insuranceContractId, updatedInsuranceContract);
@@ -48,13 +53,23 @@ import tn.esprit.easyfund.services.IInsuranceContractService;
             }
         }
 
-        @DeleteMapping
+        @DeleteMapping("/delete")
         public ResponseEntity<Void> deleteInsuranceContract( @RequestParam(name = "id") Long insuranceContractId) {
             insuranceContractService.deleteInsuranceContract(insuranceContractId);
             return ResponseEntity.noContent().build();
         }
 
 
+        @GetMapping("/get/assigned-to-agent")
+        public List<InsuranceContract> getInsuranceContractsAssignedToAgent() {
+            try {
+                // Call the service method to get claims assigned to the agent
+                return insuranceContractService.getInsuranceContractsAssignedToAgent();
+            } catch (Exception e) {
+                // Handle exceptions and return an appropriate response
+                return (List<InsuranceContract>) ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
+        }
 
     }
 

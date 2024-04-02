@@ -14,6 +14,10 @@ public interface IUserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.assignedClaims c WHERE u.role = 'AGENT' AND c.claimStatus = 'OPEN'")
     List<User> findAgentsWithOpenClaims();
 
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.contracts c WHERE u.role = 'AGENT' GROUP BY u ORDER BY COUNT(c) ASC")
+    List<User> findAllAgentWithWorkload();
+     
+
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.assignedClaims c WHERE u.role = 'AGENT' AND c.claimStatus = 'OPEN' " +
             " ORDER BY COUNT(c) ASC LIMIT 1")
     User findAgentWithLeastOpenClaims();

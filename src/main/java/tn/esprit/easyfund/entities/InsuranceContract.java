@@ -38,6 +38,15 @@ public class InsuranceContract  implements Serializable {
     @JsonIgnore
     Insurance insurance;
 
+    @ManyToOne
+    @JoinColumn(name = "agent_id")
+    @JsonIgnore
+    private User agent;
+
+
+    @Transient
+    private Long agentId;
+
     // Additional field to hold the insurance ID from JSON payload
     @Transient
     private Long insuranceId;
