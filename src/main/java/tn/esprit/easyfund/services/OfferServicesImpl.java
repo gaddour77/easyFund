@@ -20,10 +20,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -67,12 +64,18 @@ public class OfferServicesImpl implements IOfferServices{
         offerRepositories.deleteAll();
         System.out.println("offers deleted");
     }
+   public List<Offer> getByStatus(String status){
+        List<Offer> list =new ArrayList<>();
+        OfferStatus offerStatus = OfferStatus.valueOf(status);
+        list = offerRepositories.finbByOfferStatus(offerStatus);
+        return  list;
+    }
     public List<Offer> addScrap(){
         List<Offer> scrapOffers = new ArrayList<>();
         //les sites (urls,balise,nom,prix)
-        WebSite jumia = new WebSite("https://www.jumia.com.tn/catalog/?q=ordinateur%2Bportable","a.core","h3.name","div.prc");
-        WebSite tunisianet = new WebSite("https://www.tunisianet.com.tn/301-pc-portable-tunisie","div.thumbnail-container.text-xs-center","div.wb-product-desc.product-description.col-lg-5.col-xl-5.col-md-6.col-sm-6.col-xs-6","span.price");
-       WebSite myTek = new WebSite("https://www.mytek.tn/catalogsearch/result/?q=offre","li.item.product.product-item","div.prdtBILDetails","span.special-price");
+        WebSite jumia = new WebSite("https://www.jumia.com.tn/catalog/?q=ordinateur%2Bportable","a.core","h3.name","div.prc","img._ni.camp");
+        WebSite tunisianet = new WebSite("https://www.tunisianet.com.tn/301-pc-portable-tunisie","div.thumbnail-container.text-xs-center","div.wb-product-desc.product-description.col-lg-5.col-xl-5.col-md-6.col-sm-6.col-xs-6","span.price","img.center-block.img-responsive");
+       WebSite myTek = new WebSite("https://www.mytek.tn/catalogsearch/result/?q=offre","li.item.product.product-item","div.prdtBILDetails","span.special-price","img.product-image-photo");
 
         List<WebSite> webSiteList =new ArrayList<>();
         webSiteList.add(myTek);
@@ -91,7 +94,16 @@ public class OfferServicesImpl implements IOfferServices{
                 if(!elements.isEmpty()){
                     for (Element row : elements){
                         String  name = row.select(webSite.getBaliseDescription()).text();
-                        String  price =row.select(webSite.getBalisePrice()).first().text();
+                        String  price = row.select(webSite.getBalisePrice()).text();
+                      String  image =row.select(webSite.getBaliseImage()).attr("abs:src").toString();
+                      if( webSite==jumia){
+                          image =row.select(webSite.getBaliseImage()).attr("abs:data-src").toString();
+                          if (image.equals("")){
+                              image = row.select("img.img").attr("abs:data-src").toString();
+                          }
+
+                      }
+                     //   String  image =row.getElementsByClass(webSite.getBaliseImage()).first().attr("abs:src");
 
                         if(name.isEmpty()){
                             System.out.println("problem balise nom ");
@@ -103,6 +115,7 @@ public class OfferServicesImpl implements IOfferServices{
                             System.out.println("name: " + name);
                             System.out.println("price: " + price.replaceAll("[^0-9,.]", ""));
                             System.out.println( "link : "+ webSite.getUrl());
+                            System.out.println("image : "+image);
                             OfferStatus offerStatus = OfferStatus.PENDING;
                             OfferCategory category = OfferCategory.TECH;
                            //partie valide
@@ -122,8 +135,10 @@ public class OfferServicesImpl implements IOfferServices{
 
                            Long p = Long.parseLong(k)/100;
 
-                            Offer offer = new Offer(name.substring(0, Math.min(name.length(), 100)),webSite.getUrl(),p,offerStatus,category);
-                            scrapOffers.add(offer);
+                             Offer offer = new Offer(name.substring(0, Math.min(name.length(), 100)),doc.location(),p,offerStatus,category,image);
+                            offer.setOfferImage(image);
+                             scrapOffers.add(offer);
+
                         }
 
                     }
@@ -141,6 +156,7 @@ public class OfferServicesImpl implements IOfferServices{
        // List<Offer> exo =new ArrayList<>();
 
         for(Offer offer : scrapOffers){
+            System.out.println("tracking offer  2: "+offer.getOfferImage());
             Offer   existingOffer = offerRepositories.findTopByOfferCategoryAndOfferDescriptionAndOfferLink(offer.getOfferCategory(), offer.getOfferDescription(),offer.getOfferLink());
            // List<Offer>  exo = offerRepositories.findByOfferCategoryAndOfferDescriptionAndOfferLink(offer.getOfferCategory(), offer.getOfferDescription(),offer.getOfferLink());
 

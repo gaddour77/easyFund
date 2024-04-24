@@ -35,12 +35,9 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     private IOfferRepositories offerRepositories;
 
     public FinancingRequest addFinancing(FinancingRequest financingRequest){
-        List<FinancingRequest> fr = null;
-                fr =financingRequestRepository.findByUserIdAndOfferId(financingRequest.getUser().getUserId(),financingRequest.getOffer().getOffreId());
-       if (fr==null){
+
            return financingRequestRepository.save(financingRequest);
-       }
-       return null;
+
     }
     public List<FinancingRequest> detect(FinancingRequest fr){
         return financingRequestRepository.findByUserIdAndOfferId(fr.getUser().getUserId(),fr.getOffer().getOffreId());
@@ -72,69 +69,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     public List<FinancingRequest> findByUser(long id){
         return financingRequestRepository.findByUser(id);
     }
-    public ServletOutputStream calculateAmortizationSchedule(FinancingRequest financingRequest,HttpServletResponse response,String name) throws IOException, InterruptedException {
-       // CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet feuille = workbook.createSheet("AmortizationSchedule");
 
-        // Création des en-têtes
-       HSSFRow enTete = feuille.createRow(0);
-        enTete.createCell(0).setCellValue("Month");
-        enTete.createCell(1).setCellValue("Solde initial");
-        enTete.createCell(2).setCellValue("Intérêts");
-        enTete.createCell(3).setCellValue("Principal");
-        enTete.createCell(4).setCellValue("Paiement mensuel");
-        enTete.createCell(5).setCellValue("Solde final");
-        Offer offer = offerRepositories.findById(financingRequest.getOffer().getOffreId()).orElse(null);
-        LocalDate dateDebut = financingRequest.getDateFinancingRequest();
-        LocalDate dateFin = financingRequest.getFinalDate();
-
-        double tauxInteretAnnuel = 5.6;
-        // Calcul de la période entre les deux dates
-        Period period = Period.between(dateDebut, dateFin);
-        System.out.println("period : "+period);
-        int moisDifference = period.getYears() * 12 + period.getMonths();
-        double soldeInitial = offer.getOfferPrice();
-        double tauxInteretMensuel = tauxInteretAnnuel / 12 / 100;
-        double paiementMensuel = offer.getOfferPrice() * (tauxInteretMensuel / (1 - Math.pow(1 + tauxInteretMensuel, -moisDifference)));
-             System.out.println("id :"+paiementMensuel+tauxInteretAnnuel+tauxInteretMensuel+"mois :"+moisDifference+"dated"+dateDebut);
-        for (int mois = 1; mois <= moisDifference; mois++) {
-            Row ligne = feuille.createRow(mois);
-            double interets = soldeInitial * tauxInteretMensuel;
-            double principal = paiementMensuel - interets;
-            double soldeFinal = soldeInitial - principal;
-            System.out.println("indicateur : "+mois+financingRequest.toString()+mois+interets+principal+soldeFinal);
-
-            ligne.createCell(0).setCellValue(mois);
-            ligne.createCell(1).setCellValue(soldeInitial);
-            ligne.createCell(2).setCellValue(interets);
-            ligne.createCell(3).setCellValue(/*principal*/paiementMensuel);
-            ligne.createCell(4).setCellValue(/*paiementMensuel*/principal);
-            ligne.createCell(5).setCellValue(soldeFinal);
-
-            soldeInitial = soldeFinal;
-            if(soldeFinal<0){
-                soldeFinal=0 ;
-            }
-        }
-       String uploadDir="C:/Users/GADOUR/IdeaProjects/easyFund/src/main/resources/excel";
-        String  fileName = "";
-        File file = new File(uploadDir + File.separator + name);
-        FileOutputStream fs = new FileOutputStream(file);
-        ServletOutputStream ops = response.getOutputStream();
-       // fs.wait(2000);
-
-         workbook.write(fs);
-
-        workbook.write(ops);
-        //workbook.write(file);
-
-
-        workbook.close();
-        ops.close();
-        fs.close();
-        return ops;
-    }
     public void calculateAmortizationSchedule1(FinancingRequest financingRequest,HttpServletResponse response,String name) throws IOException, InterruptedException {
         // CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -175,7 +110,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         System.out.println("taux d'intert:   "+tauxInteretAnnuel);
         double tauxInteretMensuel = tauxInteretAnnuel / 12 / 100;
         double paiementMensuel = offer.getOfferPrice() * (tauxInteretMensuel / (1 - Math.pow(1 + tauxInteretMensuel, -moisDifference)));
-        System.out.println("id :"+paiementMensuel+tauxInteretAnnuel+tauxInteretMensuel+"mois :"+moisDifference+"dated"+dateDebut);
+          System.out.println("id :"+paiementMensuel+tauxInteretAnnuel+tauxInteretMensuel+"mois :"+moisDifference+"dated"+dateDebut);
 
         for (int mois = 1; mois <= moisDifference; mois++) {
             Row ligne = feuille.createRow(mois);
@@ -252,7 +187,8 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     }
     public double installmentPayment(long id) throws IOException {
         FinancingRequest financingRequest =financingRequestRepository.findById(id).orElse(null);
-         String path = financingRequest.getExcel();
+        String uploadDir="src/main/resources/excel/";
+         String path = uploadDir+ financingRequest.getExcel();
         double amount =0;
          if (path!=null & financingRequest!=null){
              POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(path));

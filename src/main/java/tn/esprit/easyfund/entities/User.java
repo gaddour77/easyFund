@@ -45,6 +45,9 @@ public class User implements Serializable {
     @JsonIgnore
     @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
+    @ManyToMany(mappedBy = "participants")
+    @JsonIgnore
+    private Set<Chat> chats;
 
 
 

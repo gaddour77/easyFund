@@ -13,6 +13,7 @@ import java.util.Set;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "https://localhost:4200")
 @RequestMapping("/offre")
 public class OfferController {
 
@@ -42,6 +43,11 @@ public class OfferController {
     @GetMapping("/alloffers")
     public List<Offer> findAll(){
         return offerServices.findAll();
+    }
+    @GetMapping("/getbystatus/{status}")
+    List<Offer> getByStatus(@PathVariable String status){
+        List<Offer> statusList= offerServices.getByStatus(status);
+        return  statusList;
     }
     @DeleteMapping("/delete/{id}")
     public String delete (@PathVariable long id){
