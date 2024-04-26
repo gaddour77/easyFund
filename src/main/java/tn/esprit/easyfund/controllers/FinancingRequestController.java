@@ -37,24 +37,7 @@ public class FinancingRequestController {
 
     @PostMapping("/addfinancing")
     public FinancingRequest addfinancing(@RequestBody FinancingRequest financingRequest,HttpServletResponse response) throws Exception {
-///partie valid
-        /*try{
-            response.setContentType("application/octet-stream");
 
-            String headerKey = "Content-Disposition";
-            String name = financingRequest.getUser().getNom()+"easy"+financingRequest.getOffer().getOffreId()+".xls";
-            String headerValue = "attachment;filename="+name;
-
-            response.setHeader(headerKey, headerValue);
-            ServletOutputStream ops = financingRequestServices.calculateAmortizationSchedule(financingRequest, response,name);
-
-            financingRequestServices.saveOpsToFile(ops,name);
-        }catch (IOException exception){
-           exception.printStackTrace();
-        }
-
-        return financingRequestServices.addFinancing(financingRequest);
-        */
         ////test
         List<FinancingRequest> lfr = financingRequestServices.detect(financingRequest);
         //String uploadDir="src/main/resources/excel/";

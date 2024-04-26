@@ -1,8 +1,10 @@
 package tn.esprit.easyfund.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -22,6 +24,7 @@ public class Profile {
     @OneToOne
     private Adress adress ;
     @OneToOne
+    @JoinColumn(name = "userId")
     private User user;
 
 }
