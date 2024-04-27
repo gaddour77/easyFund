@@ -37,6 +37,7 @@ public class StripeApiController {
         double amount = financingRequestServices.installmentPayment(id);
          model.setAmount(amount);
          String token = "tok_visa";
+         model.setStripeToken(token);
         return stripeService.charge(model);
     }
 

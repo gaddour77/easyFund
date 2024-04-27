@@ -6,21 +6,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.*;
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.Row;
-
 
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -41,6 +37,7 @@ public class OfferServicesImpl implements IOfferServices{
     }
     public Offer updateOffer(Offer offer){
         Offer existingOffer = offerRepositories.findById(offer.getOffreId()).orElse(null);
+
         existingOffer.setOfferLink(offer.getOfferLink());
         existingOffer.setOfferCategory(offer.getOfferCategory());
         existingOffer.setOfferDescription(offer.getOfferDescription());
@@ -65,9 +62,9 @@ public class OfferServicesImpl implements IOfferServices{
         System.out.println("offers deleted");
     }
    public List<Offer> getByStatus(String status){
-        List<Offer> list =new ArrayList<>();
+
         OfferStatus offerStatus = OfferStatus.valueOf(status);
-        list = offerRepositories.finbByOfferStatus(offerStatus);
+       List<Offer> list = offerRepositories.finbByOfferStatus(offerStatus);
         return  list;
     }
     public List<Offer> addScrap(){
@@ -98,7 +95,7 @@ public class OfferServicesImpl implements IOfferServices{
                       String  image =row.select(webSite.getBaliseImage()).attr("abs:src").toString();
                       if( webSite==jumia){
                           image =row.select(webSite.getBaliseImage()).attr("abs:data-src").toString();
-                          if (image.equals("")){
+                          if (image.isEmpty()){
                               image = row.select("img.img").attr("abs:data-src").toString();
                           }
 
@@ -123,6 +120,7 @@ public class OfferServicesImpl implements IOfferServices{
 
                             String k = price.replaceAll("\\..*$", "");
                             k=k.replaceAll("[^0-9]", "");*/
+
                             String k = price.replaceAll("[^0-9,]", ""); // Remove all characters except digits and commas
                             k = k.replaceAll(",", ""); // Remove any remaining commas
 
@@ -133,10 +131,15 @@ public class OfferServicesImpl implements IOfferServices{
                             }
 
 
-                           Long p = Long.parseLong(k)/100;
+                        Long p = Long.parseLong(k)/100;
+                            if(webSite==myTek){
+                                p=p/10;
+                            } else if (webSite==tunisianet) {
+                                p=p/1000000;
+                            }
 
-                             Offer offer = new Offer(name.substring(0, Math.min(name.length(), 100)),doc.location(),p,offerStatus,category,image);
-                            offer.setOfferImage(image);
+                            Offer offer = new Offer(name.substring(0, Math.min(name.length(), 100)),doc.location(),p,offerStatus,category,image);
+                             offer.setOfferImage(image);
                              scrapOffers.add(offer);
 
                         }
@@ -164,6 +167,47 @@ public class OfferServicesImpl implements IOfferServices{
 
               //offerRepositories.save(offer);
                offerList.add(offer);
+               String image= offer.getOfferImage();
+               //download image
+               try {
+                   URL url = new URL(image);
+                   HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+                   int responseCode = httpConn.getResponseCode();
+
+                   // Check if the response code is HTTP OK
+                   if (responseCode == HttpURLConnection.HTTP_OK) {
+                       // Opens input stream from the HTTP connection
+                       InputStream inputStream = httpConn.getInputStream();
+
+                       // Extracts file name from URL
+                       String fileName = image.substring(image.lastIndexOf("/") + 1);
+
+                       // Opens an output stream to save into file
+                       String saveDir = "C:/xampp/htdocs/easyFund/";
+                       FileOutputStream outputStream = new FileOutputStream(saveDir + fileName);
+                       String path = "http://localhost/easyFund/";
+                       offer.setOfferImage(path + fileName);
+                       // Reading from the input stream and writing to the output stream
+                       int bytesRead;
+                       byte[] buffer = new byte[4096];
+                       while ((bytesRead = inputStream.read(buffer)) != -1) {
+                           outputStream.write(buffer, 0, bytesRead);
+                       }
+
+                       outputStream.close();
+                       inputStream.close();
+
+                       System.out.println("Image downloaded: " + fileName);
+                   } else {
+                       System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+                   }
+                   httpConn.disconnect();
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+               //end partie download image
+
+
            }else if(existingOffer.getOfferPrice()!=offer.getOfferPrice()){
                existingOffer.setOfferPrice(offer.getOfferPrice());
                offerRepositories.save(existingOffer);

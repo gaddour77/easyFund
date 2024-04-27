@@ -1,15 +1,12 @@
 package tn.esprit.easyfund.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.services.OfferServicesImpl;
-
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -20,6 +17,7 @@ public class OfferController {
     private OfferServicesImpl offerServices;
     @PostMapping("/addOffre")
     public ResponseEntity<Offer> addOffre(@RequestBody Offer offer){
+        System.out.println(offer.getOfferImage());
         Offer offer1 = offerServices.addOffer(offer);
         if (offer1!=null){
             return ResponseEntity.ok(offer1);
