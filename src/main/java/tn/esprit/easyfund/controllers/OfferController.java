@@ -38,6 +38,10 @@ public class OfferController {
     public Offer updateOffer(@RequestBody Offer offer){
         return offerServices.updateOffer(offer);
     }
+    @PutMapping("/approve")
+    public Offer approve(@RequestBody Offer offer){
+        return offerServices.approve(offer);
+    }
     @GetMapping("/alloffers")
     public List<Offer> findAll(){
         return offerServices.findAll();

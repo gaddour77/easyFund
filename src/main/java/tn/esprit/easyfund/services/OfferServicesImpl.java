@@ -228,4 +228,10 @@ public class OfferServicesImpl implements IOfferServices{
         List<FinancingRequest> financingRequests = financingRequestRepository.findByOffer(offer.getOffreId());
        return financingRequests;
     }
+    public Offer approve(Offer offer){
+        Offer offer1 = offerRepositories.findById(offer.getOffreId()).orElse(null);
+        OfferStatus offerStatus = OfferStatus.ACTIVE;
+        offer1.setOfferStatus(offerStatus);
+        return offerRepositories.save(offer1);
+    }
 }
