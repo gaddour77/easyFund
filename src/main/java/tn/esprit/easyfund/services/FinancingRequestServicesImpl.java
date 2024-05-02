@@ -3,29 +3,21 @@ package tn.esprit.easyfund.services;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.QuoteMode;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.entities.RequestStatus;
+import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -38,6 +30,9 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
 
            return financingRequestRepository.save(financingRequest);
 
+    }
+    public User findUser(Long id){
+        return financingRequestRepository.findUserByFinancingRequestId(id);
     }
     public List<FinancingRequest> detect(FinancingRequest fr){
         return financingRequestRepository.findByUserIdAndOfferId(fr.getUser().getUserId(),fr.getOffer().getOffreId());
@@ -133,7 +128,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
                 soldeFinal=0 ;
             }
         }
-        String uploadDir="C:/Users/GADOUR/IdeaProjects/easyFund/src/main/resources/excel";
+        String uploadDir="C:/xampp/htdocs/easyFund/excel";
         String  fileName = "";
         File file = new File(uploadDir + File.separator + name);
         FileOutputStream fs = new FileOutputStream(file);
@@ -267,4 +262,5 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         return financingRequestRepository.findByRequestStatus(status);
 
     }
+
 }

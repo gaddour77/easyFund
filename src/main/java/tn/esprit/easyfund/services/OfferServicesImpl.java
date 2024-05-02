@@ -26,6 +26,43 @@ public class OfferServicesImpl implements IOfferServices{
 
     @Override
     public Offer addOffer(Offer offer) {
+        String image = offer.getOfferImage();
+        try {
+            URL url = new URL(image);
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            int responseCode = httpConn.getResponseCode();
+
+            // Check if the response code is HTTP OK
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Opens input stream from the HTTP connection
+                InputStream inputStream = httpConn.getInputStream();
+
+                // Extracts file name from URL
+               // String fileName = image.substring(image.lastIndexOf("/") + 1);
+
+                // Opens an output stream to save into file
+                String saveDir = "http://localhost/easyFund/img/";
+                FileOutputStream outputStream = new FileOutputStream(saveDir + image);
+                String path = "http://localhost/easyFund/img/";
+                offer.setOfferImage(path + image);
+                // Reading from the input stream and writing to the output stream
+                int bytesRead;
+                byte[] buffer = new byte[4096];
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                outputStream.close();
+                inputStream.close();
+
+                System.out.println("Image downloaded: " + image);
+            } else {
+                System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+            }
+            httpConn.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return offerRepositories.save(offer);
     }
     public Offer findById(long id){
@@ -58,6 +95,7 @@ public class OfferServicesImpl implements IOfferServices{
         return offerList;
     }
     public void deleteAll(){
+        
         offerRepositories.deleteAll();
         System.out.println("offers deleted");
     }
@@ -183,9 +221,9 @@ public class OfferServicesImpl implements IOfferServices{
                        String fileName = image.substring(image.lastIndexOf("/") + 1);
 
                        // Opens an output stream to save into file
-                       String saveDir = "C:/xampp/htdocs/easyFund/";
+                       String saveDir = "C:/xampp/htdocs/easyFund/img/";
                        FileOutputStream outputStream = new FileOutputStream(saveDir + fileName);
-                       String path = "http://localhost/easyFund/";
+                       String path = "http://localhost/easyFund/img/";
                        offer.setOfferImage(path + fileName);
                        // Reading from the input stream and writing to the output stream
                        int bytesRead;
@@ -228,10 +266,11 @@ public class OfferServicesImpl implements IOfferServices{
         List<FinancingRequest> financingRequests = financingRequestRepository.findByOffer(offer.getOffreId());
        return financingRequests;
     }
-    public Offer approve(Offer offer){
-        Offer offer1 = offerRepositories.findById(offer.getOffreId()).orElse(null);
-        OfferStatus offerStatus = OfferStatus.ACTIVE;
-        offer1.setOfferStatus(offerStatus);
+    public Offer approve(Long id,OfferStatus status){
+        Offer offer1 = offerRepositories.findById(id).orElse(null);
+        //OfferStatus offerStatus = OfferStatus.valueOf(action.toUpperCase());
+       // System.out.println(offerStatus);
+        offer1.setOfferStatus(status);
         return offerRepositories.save(offer1);
     }
 }

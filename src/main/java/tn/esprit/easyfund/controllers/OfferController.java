@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
+import tn.esprit.easyfund.entities.OfferStatus;
 import tn.esprit.easyfund.services.OfferServicesImpl;
 import java.util.List;
 
@@ -38,9 +39,12 @@ public class OfferController {
     public Offer updateOffer(@RequestBody Offer offer){
         return offerServices.updateOffer(offer);
     }
-    @PutMapping("/approve")
-    public Offer approve(@RequestBody Offer offer){
-        return offerServices.approve(offer);
+    @PutMapping("/approve/{id}/{offerStatus}")
+    public Offer approve(@PathVariable Long id,@PathVariable String offerStatus ){
+
+        OfferStatus status =OfferStatus.valueOf(offerStatus);
+        System.out.println(status);
+        return offerServices.approve(id,status);
     }
     @GetMapping("/alloffers")
     public List<Offer> findAll(){

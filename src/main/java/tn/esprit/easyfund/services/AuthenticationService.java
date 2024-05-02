@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,21 +37,21 @@ public class AuthenticationService {
 
   public AuthenticationResponse register(RegisterRequest request) {
     var user = User.builder()
-        .firstname(request.getFirstname())
-        .lastname(request.getLastname())
-        .email(request.getEmail())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(request.getRole())
-        .build();
+            .firstname(request.getFirstname())
+            .lastname(request.getLastname())
+            .email(request.getEmail())
+            .password(passwordEncoder.encode(request.getPassword()))
+            .role(request.getRole())
+            .build();
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken((UserDetails) user);
     var refreshToken = jwtService.generateRefreshToken((UserDetails) user);
     profileServices.createProfileForUser(savedUser);
     saveUserToken(savedUser, jwtToken);
     return AuthenticationResponse.builder()
-        .accessToken(jwtToken)
+            .accessToken(jwtToken)
             .refreshToken(refreshToken)
-        .build();
+            .build();
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -92,14 +93,15 @@ public class AuthenticationService {
               .build();
     }
   }
+
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()
-        .user(user)
-        .token(jwtToken)
-        .tokenType(TokenType.BEARER)
-        .expired(false)
-        .revoked(false)
-        .build();
+            .user(user)
+            .token(jwtToken)
+            .tokenType(TokenType.BEARER)
+            .expired(false)
+            .revoked(false)
+            .build();
     tokenRepository.save(token);
   }
 
@@ -121,7 +123,7 @@ public class AuthenticationService {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
     final String userEmail;
-    if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       return;
     }
     refreshToken = authHeader.substring(7);
@@ -141,6 +143,7 @@ public class AuthenticationService {
       }
     }
   }
+
   public void sendValidationCode(String email, ValidationMethod validationMethod) {
     User user = repository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -195,5 +198,16 @@ public class AuthenticationService {
     LocalDateTime codeTimestamp = user.getValidationCodeTimestamp();
     return userCode != null && userCode.equals(submittedCode) &&
             codeTimestamp != null && codeTimestamp.isAfter(LocalDateTime.now().minusMinutes(10)); // 10-minute validity
+  }
+
+  private Long getConnectedUser() {
+    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    // Find the user based on the username (assuming username is the email)
+    User user = repository.findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+    return user.getUserId();
+
+
   }
 }

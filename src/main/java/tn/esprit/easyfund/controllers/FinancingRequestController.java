@@ -1,26 +1,18 @@
 package tn.esprit.easyfund.controllers;
 
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
-import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.entities.RequestStatus;
-import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
+import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.services.FinancingRequestServicesImpl;
-import tn.esprit.easyfund.services.IFinancingRequestServices;
 import tn.esprit.easyfund.services.OfferServicesImpl;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -40,13 +32,16 @@ public class FinancingRequestController {
 
         ////test
         List<FinancingRequest> lfr = financingRequestServices.detect(financingRequest);
+        for( FinancingRequest f : lfr){
+            System.out.println("its here :"+f.getExcel()+f.getFinalDate());
+        }
         //String uploadDir="src/main/resources/excel/";
         String name = financingRequest.getUser().getUserId()+"easy"+financingRequest.getOffer().getOffreId()+".xls";
        // String excel = uploadDir+name;
         String excel = name;
         System.out.println(excel);
         financingRequest.setExcel(excel);
-        if (lfr.isEmpty()){
+        if (lfr.size()==0){
             financingRequestServices.calculateAmortizationSchedule1(financingRequest,response,name);
             return financingRequestServices.addFinancing(financingRequest);
         }
@@ -57,11 +52,20 @@ public class FinancingRequestController {
         return  null;
 
     }
+    @GetMapping("/finduser/{id}")
+    public Long findUserId(@PathVariable Long id){
+        User user = financingRequestServices.findUser(id);
+        if (user!=null){
+            return user.getUserId();
+
+        }
+        return null;
+    }
     @GetMapping("/downloadExcel/{name}")
     public ResponseEntity<Resource> downloadExcelFile(@PathVariable String name) throws IOException {
         //test
         String uploadDir="src/main/resources/excel/";
-        String ecxel = "src/main/resources/excel/"+name;
+        String ecxel = "C:/xampp/htdocs/easyFund/excel/"+name;
         System.out.println(ecxel);
 
        /* File file = ResourceUtils.getFile(ecxel);
@@ -136,6 +140,7 @@ public class FinancingRequestController {
     }
     @GetMapping("/findbyoffer/{id}")
     public List<FinancingRequest> findByOffer(@PathVariable long id){
+        System.out.println(id);
         return financingRequestServices.findByOffer(id);
     }
     @GetMapping("/findbyuser/{id}")
@@ -169,7 +174,7 @@ public class FinancingRequestController {
         response.flushBuffer();
     }
     @GetMapping("/findByStaus")
-    public List<FinancingRequest> findByStatus(RequestStatus status){
+    public List<FinancingRequest> findByStatus(@RequestBody RequestStatus status){
         return financingRequestServices.finbByStatus(status);
     }
 }

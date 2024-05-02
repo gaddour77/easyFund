@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.util.Date;
 @Entity
 @Table(name = "Claim")
@@ -14,7 +15,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Claim {
+public class Claim implements Serializable {
+    private static final long serialVersionUID = 1L;
 
 
 
