@@ -182,7 +182,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     }
     public double installmentPayment(long id) throws IOException {
         FinancingRequest financingRequest =financingRequestRepository.findById(id).orElse(null);
-        String uploadDir="src/main/resources/excel/";
+        String uploadDir="C:/xampp/htdocs/easyFund/excel/";
          String path = uploadDir+ financingRequest.getExcel();
         double amount =0;
          if (path!=null & financingRequest!=null){

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
@@ -32,7 +33,7 @@ public class FinancingRequestController {
     private final Path rootLocation = Paths.get(" resources/excel/");
 
     @PostMapping("/addfinancing")
-    public FinancingRequest addfinancing(@RequestBody FinancingRequest financingRequest,HttpServletResponse response) throws Exception {
+    public ResponseEntity<FinancingRequest> addfinancing(@RequestBody FinancingRequest financingRequest,HttpServletResponse response) throws Exception {
 
          Long id = authenticationService.getConnectedUser();
           User user = userRepository.findById(id).orElse(null);
@@ -54,13 +55,15 @@ public class FinancingRequestController {
         financingRequest.setExcel(excel);
         if (lfr.size()==0){
             financingRequestServices.calculateAmortizationSchedule1(financingRequest,response,name);
-            return financingRequestServices.addFinancing(financingRequest);
+            FinancingRequest savedRequest = financingRequestServices.addFinancing(financingRequest);
+            return new ResponseEntity<>(savedRequest, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT); // Or any other appropriate response code
         }
 
 
 
 
-        return  null;
 
     }
     @GetMapping("/finduser/{id}")
@@ -158,6 +161,12 @@ public class FinancingRequestController {
     public List<FinancingRequest> findByUser(@PathVariable  long id){
         return financingRequestServices.findByUser(id);
     }
+    @GetMapping("/mylist")
+    public List<FinancingRequest> findMyfinancings(){
+        Long id = authenticationService.getConnectedUser();
+        return financingRequestServices.findByUser(id);
+    }
+
     @DeleteMapping("/delete/{id}")
     public String delete(@PathVariable long id){
         return financingRequestServices.delete(id);
