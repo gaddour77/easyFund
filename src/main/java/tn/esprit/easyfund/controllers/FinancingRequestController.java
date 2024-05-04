@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.RequestStatus;
 import tn.esprit.easyfund.entities.User;
+import tn.esprit.easyfund.repositories.IUserRepository;
+import tn.esprit.easyfund.services.AuthenticationService;
 import tn.esprit.easyfund.services.FinancingRequestServicesImpl;
 import tn.esprit.easyfund.services.OfferServicesImpl;
 
@@ -25,11 +27,20 @@ import java.util.List;
 public class FinancingRequestController {
     private FinancingRequestServicesImpl financingRequestServices;
     private OfferServicesImpl offerServices;
+    private AuthenticationService authenticationService;
+    private IUserRepository userRepository;
     private final Path rootLocation = Paths.get(" resources/excel/");
 
     @PostMapping("/addfinancing")
     public FinancingRequest addfinancing(@RequestBody FinancingRequest financingRequest,HttpServletResponse response) throws Exception {
 
+         Long id = authenticationService.getConnectedUser();
+          User user = userRepository.findById(id).orElse(null);
+          if(user!=null){
+              financingRequest.setUser(user);
+
+          }
+          financingRequest.setRequestStatus(RequestStatus.PENDING);
         ////test
         List<FinancingRequest> lfr = financingRequestServices.detect(financingRequest);
         for( FinancingRequest f : lfr){

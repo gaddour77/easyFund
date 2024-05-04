@@ -200,7 +200,7 @@ public class AuthenticationService {
             codeTimestamp != null && codeTimestamp.isAfter(LocalDateTime.now().minusMinutes(10)); // 10-minute validity
   }
 
-  private Long getConnectedUser() {
+  public Long getConnectedUser() {
     UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     // Find the user based on the username (assuming username is the email)
