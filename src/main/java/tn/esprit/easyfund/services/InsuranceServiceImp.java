@@ -32,7 +32,6 @@ public class InsuranceServiceImp implements IInsuranceService{
 
             existingInsurance.setType(updatedInsurance.getType());
             existingInsurance.setBeneficiary(updatedInsurance.getBeneficiary());
-            existingInsurance.setCoverageAmount(updatedInsurance.getCoverageAmount());
             existingInsurance.setName(updatedInsurance.getName());
 
 

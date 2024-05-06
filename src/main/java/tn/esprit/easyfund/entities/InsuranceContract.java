@@ -10,6 +10,7 @@ import lombok.Setter;
 
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -32,6 +33,14 @@ public class InsuranceContract  implements Serializable {
     private double paidAmount;
 
     private boolean isRenewable;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt = new Date();
+
+    private Date starDate = new Date();
+    private Date endDate = new Date();
+
 
     @ManyToOne
     @JoinColumn(name = "insurance_id")
