@@ -7,14 +7,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.Claim;
 import tn.esprit.easyfund.entities.ClaimStatus;
-import tn.esprit.easyfund.entities.Role;
 import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IClaimRepository;
 import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class ClaimServicesImpl implements IClaimServices{
@@ -90,7 +88,7 @@ public class ClaimServicesImpl implements IClaimServices{
                     .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
             // Retrieve claims assigned to the agent
-            return claimRepository.findByAgent(agent);
+            return claimRepository.findByAgentAndClaimStatus(agent,ClaimStatus.OPEN);
         } else {
             // Handle the case where the user is not authenticated or has an invalid principal
             throw new RuntimeException("Invalid authentication or principal");
@@ -98,11 +96,11 @@ public class ClaimServicesImpl implements IClaimServices{
     }
     @Override
     public void takeClaim(Long claimId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            User agent = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseThrow(() -> new NoSuchElementException("Authenticated user not found"));
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Find the user based on the username (assuming username is the email)
+        User agent = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
             Claim claim = claimRepository.findById(claimId)
                     .orElseThrow(() -> new NoSuchElementException("Claim not found"));
@@ -114,9 +112,30 @@ public class ClaimServicesImpl implements IClaimServices{
             } else {
                 throw new RuntimeException("Claim is not pending");
             }
-        } else {
-            throw new NoSuchElementException("Invalid authentication or principal");
         }
+
+    @Override
+    public void closeClaim(Long claimId) {
+
+
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new NoSuchElementException("Claim not found"));
+
+
+            claim.setClaimStatus(ClaimStatus.CLOSED);
+
+            claimRepository.save(claim);
+
     }
 
+    @Override
+    public List<Claim> getAllUserClaims() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Find the user based on the username (assuming username is the email)
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+        return claimRepository.findByUser(user);    }
 }
+
+

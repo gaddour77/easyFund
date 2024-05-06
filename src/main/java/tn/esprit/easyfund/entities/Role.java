@@ -4,26 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static tn.esprit.easyfund.entities.Permission.ADMIN_CREATE;
-import static tn.esprit.easyfund.entities.Permission.ADMIN_DELETE;
-import static tn.esprit.easyfund.entities.Permission.ADMIN_READ;
-import static tn.esprit.easyfund.entities.Permission.ADMIN_UPDATE;
-import static tn.esprit.easyfund.entities.Permission.CLIENT_CREATE;
-import static tn.esprit.easyfund.entities.Permission.CLIENT_DELETE;
-import static tn.esprit.easyfund.entities.Permission.CLIENT_READ;
-import static tn.esprit.easyfund.entities.Permission.CLIENT_UPDATE;
-import static tn.esprit.easyfund.entities.Permission.INVESTOR_CREATE;
-import static tn.esprit.easyfund.entities.Permission.INVESTOR_DELETE;
-import static tn.esprit.easyfund.entities.Permission.INVESTOR_READ;
-import static tn.esprit.easyfund.entities.Permission.INVESTOR_UPDATE;
-import static tn.esprit.easyfund.entities.Permission.AGENT_CREATE;
-import static tn.esprit.easyfund.entities.Permission.AGENT_DELETE;
-import static tn.esprit.easyfund.entities.Permission.AGENT_READ;
-import static tn.esprit.easyfund.entities.Permission.AGENT_UPDATE;
+
+import static tn.esprit.easyfund.entities.Permission.*;
 
 @RequiredArgsConstructor
 public enum Role {

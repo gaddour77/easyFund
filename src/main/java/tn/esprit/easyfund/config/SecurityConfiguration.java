@@ -13,9 +13,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static tn.esprit.easyfund.entities.Role.ADMIN;
 import static tn.esprit.easyfund.entities.Role.AGENT;
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -34,7 +34,10 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"};
+            "/swagger-ui.html",
+            "/api/v1/auth/forgot-password/send-code",
+    "api/reports/bannedUsers",
+            "api/reports/unban"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
@@ -46,11 +49,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
                                 .anyRequest()
                                 .authenticated()
                 )

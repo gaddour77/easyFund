@@ -1,10 +1,12 @@
 package tn.esprit.easyfund.entities;
 
-import tn.esprit.easyfund.entities.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Builder
@@ -17,4 +19,9 @@ public class RegisterRequest {
   private String email;
   private String password;
   private Role role;
+  private LocalDate DateNaissance ;
+  private String phoneNumber;
+  private Long cin ;
+  private Float salary ;
+
 }

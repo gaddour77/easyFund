@@ -4,9 +4,6 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import tn.esprit.easyfund.services.IEmailService;
-
-import javax.mail.MessagingException;
 
 @Service
 public class EmailServiceImpl implements IEmailService {

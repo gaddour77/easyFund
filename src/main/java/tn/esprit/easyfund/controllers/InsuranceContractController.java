@@ -33,14 +33,12 @@ import tn.esprit.easyfund.services.IInsuranceContractService;
             return ResponseEntity.ok(insuranceContract);
         }
 
-
         @ResponseBody
         @PostMapping("/add")
         public ResponseEntity<InsuranceContract> saveInsuranceContract(@RequestBody InsuranceContract insuranceContract,  @RequestParam(name = "id") Long insuranceId) {
             InsuranceContract savedInsuranceContract = insuranceContractService.saveInsuranceContract(insuranceContract,insuranceId);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedInsuranceContract);
         }
-
         @PutMapping("/{insuranceContractId}")
         public ResponseEntity<InsuranceContract> updateInsuranceContract(@PathVariable Long insuranceContractId, @RequestBody InsuranceContract updatedInsuranceContract) {
             InsuranceContract updatedInsuranceContractData = insuranceContractService.updateInsuranceContract(insuranceContractId, updatedInsuranceContract);
