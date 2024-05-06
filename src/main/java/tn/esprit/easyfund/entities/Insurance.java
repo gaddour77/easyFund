@@ -34,7 +34,10 @@ public class Insurance  implements Serializable {
     @Enumerated(EnumType.STRING)
     private Beneficiary beneficiary;
     
-    @OneToMany(mappedBy = "insurance", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private double coverageAmount;
+
+
+    @OneToMany(mappedBy = "insurance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<InsuranceContract> contracts;
 }

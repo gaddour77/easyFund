@@ -14,7 +14,7 @@ import tn.esprit.easyfund.services.IInsuranceContractService;
 
 
 @RestController
- @RequestMapping("/api/insuranceContracts")
+    @RequestMapping("/api/insuranceContracts")
     public class InsuranceContractController {
 
         @Autowired

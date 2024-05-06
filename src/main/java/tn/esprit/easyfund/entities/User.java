@@ -74,7 +74,7 @@ public class User implements UserDetails {
     private LocalDateTime validationCodeTimestamp;
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<InsuranceContract> contracts;
 
