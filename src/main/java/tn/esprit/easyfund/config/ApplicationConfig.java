@@ -1,6 +1,8 @@
 package tn.esprit.easyfund.config;
 
 import lombok.RequiredArgsConstructor;
+import tn.esprit.easyfund.repositories.IUserRepository;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
