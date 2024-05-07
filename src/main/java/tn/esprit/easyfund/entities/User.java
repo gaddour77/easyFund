@@ -56,6 +56,7 @@ public class User implements UserDetails {
     private Role role;
     @OneToOne
     private Account account;
+  
     @OneToMany(mappedBy = "agent")
     @JsonIgnore
 
@@ -67,7 +68,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Token> tokens;
-    @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
+
+  @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
