@@ -36,7 +36,9 @@ public class SecurityConfiguration {
             "/webjars/**",
             "/swagger-ui/index.html#/**",
             "/swagger-ui.html",
-            "/api/v1/auth/forgot-password/send-code"};
+            "/api/v1/auth/forgot-password/send-code",
+    "api/reports/bannedUsers",
+            "api/reports/unban"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
@@ -48,12 +50,14 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
+
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
+
                                 .anyRequest()
                                 .authenticated()
                 )

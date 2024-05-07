@@ -14,6 +14,10 @@ public interface IClaimServices {
 
     List<Claim> getClaimsAssignedToAgent();
     void takeClaim(Long claimId);
+    void closeClaim(Long claimId);
+    List<Claim> getAllUserClaims();
+
+
 
     //function
 }

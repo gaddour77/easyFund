@@ -36,23 +36,38 @@ public class AuthenticationService {
 
 
   public AuthenticationResponse register(RegisterRequest request) {
+    // Prepend "+216" to the phone number if it doesn't already start with it
+    String phoneNumber = request.getPhoneNumber();
+    if (phoneNumber != null && !phoneNumber.startsWith("+216")) {
+      phoneNumber = "+216" + phoneNumber;
+    }
+
     var user = User.builder()
             .firstname(request.getFirstname())
             .lastname(request.getLastname())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(request.getRole())
+
+            .salary(request.getSalary())
+            .cin(request.getCin())
+            .dateOfBirth(request.getDateNaissance())
+            .phoneNumber(phoneNumber) // Use the modified phone number
             .build();
+
+
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken((UserDetails) user);
     var refreshToken = jwtService.generateRefreshToken((UserDetails) user);
     profileServices.createProfileForUser(savedUser);
     saveUserToken(savedUser, jwtToken);
+
     return AuthenticationResponse.builder()
             .accessToken(jwtToken)
             .refreshToken(refreshToken)
             .build();
   }
+
 
   public AuthenticationResponse authenticate(AuthenticationRequest request) {
     try {
@@ -149,6 +164,7 @@ public class AuthenticationService {
             .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
     String validationCode = generateValidationCode();
+    user.setPhoneNumber("+21650177848");
     user.setValidationCode(validationCode);
     user.setValidationCodeTimestamp(LocalDateTime.now());
     repository.save(user);

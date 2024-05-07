@@ -10,7 +10,10 @@ import java.util.List;
 public interface IClaimRepository extends JpaRepository<Claim, Long> {
     List<Claim> getAllOpenClaimsByClaimStatus(ClaimStatus claimStatus);
 
-    List<Claim> findByAgent(User agent);
+    List<Claim> findByAgentAndClaimStatus(User agent, ClaimStatus claimStatus);
+
 
     long countByAgentAndClaimStatus(User agent, ClaimStatus claimStatus);
+
+    List<Claim> findByUser(User user);
 }

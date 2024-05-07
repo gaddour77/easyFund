@@ -16,7 +16,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+
+@CrossOrigin(origins = "http://localhost:4200") // Allow cross-origin requests from Angular app
+
 
 public class AuthenticationController {
 
@@ -43,22 +45,79 @@ public class AuthenticationController {
     service.refreshToken(request, response);
   }
   @PostMapping("/forgot-password/send-code")
-  public ResponseEntity<Void> sendValidationCode(
-          @RequestParam(value = "email") String email,
-          @RequestParam(value = "validationMethod") ValidationMethod validationMethod
-  ) {
+  public ResponseEntity<Void> sendValidationCode(@RequestBody PasswordResetRequest request) {
+    String email = request.getEmail();
+    ValidationMethod validationMethod = request.getValidationMethod();
+
+    // Call your service with the provided email and validation method
     service.sendValidationCode(email, validationMethod);
     return ResponseEntity.ok().build();
   }
 
+  // DTO for the incoming request
+  public static class PasswordResetRequest {
+    private String email;
+    private ValidationMethod validationMethod;
+
+    // Getters and Setters
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+    public ValidationMethod getValidationMethod() {
+      return validationMethod;
+    }
+
+    public void setValidationMethod(ValidationMethod validationMethod) {
+      this.validationMethod = validationMethod;
+    }
+  }
+
   @PostMapping("/forgot-password/reset")
-  public ResponseEntity<String> resetPassword(
-          @RequestParam String email,
-          @RequestParam String validationCode,
-          @RequestParam String newPassword
-  ) {
+  public ResponseEntity<String> resetPassword(@RequestBody PasswordResetReq request) {
+    String email = request.getEmail();
+    String validationCode = request.getValidationCode();
+    String newPassword = request.getNewPassword();
+
+    // Call your service with the provided parameters
     service.resetPassword(email, validationCode, newPassword);
     return ResponseEntity.ok("Password reset successful");
+  }
+
+  // DTO for the incoming request
+  public static class PasswordResetReq {
+    private String email;
+    private String validationCode;
+    private String newPassword;
+
+    // Getters and Setters
+    public String getEmail() {
+      return email;
+    }
+
+    public void setEmail(String email) {
+      this.email = email;
+    }
+
+    public String getValidationCode() {
+      return validationCode;
+    }
+
+    public void setValidationCode(String validationCode) {
+      this.validationCode = validationCode;
+    }
+
+    public String getNewPassword() {
+      return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+      this.newPassword = newPassword;
+    }
   }
 
 

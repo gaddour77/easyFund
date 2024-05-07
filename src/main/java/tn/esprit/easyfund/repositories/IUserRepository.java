@@ -18,5 +18,7 @@ public interface IUserRepository extends JpaRepository<User, Long> {
             " ORDER BY COUNT(c) ASC LIMIT 1")
     User findAgentWithLeastOpenClaims();
     Optional<User> findTopByRoleOrderByUserIdAsc(Role role);
-    // @Query("SELECT u FROM User u WHERE u.financingRequests")
+
+    List<User> findByIsBanned(boolean isBanned);
+
 }

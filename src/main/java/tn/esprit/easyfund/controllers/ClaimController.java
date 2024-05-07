@@ -12,6 +12,8 @@ import java.util.List;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200") // Allow cross-origin requests from Angular app
+
     @RequestMapping("/api/claims")
     public class ClaimController {
 
@@ -74,6 +76,27 @@ import java.util.List;
         } catch (RuntimeException e) {
             // Handle exceptions and return an appropriate response
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @PostMapping("/{claimId}/close")
+    public ResponseEntity<String> closeClaim(@PathVariable Long claimId) {
+        try {
+            // Call the service method to allow the agent to take the claim
+            claimService.closeClaim(claimId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            // Handle exceptions and return an appropriate response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @GetMapping("/assigned-to-user")
+    public List<Claim> getClaimsAssignedToUser() {
+        try {
+            // Call the service method to get claims assigned to the agent
+            return claimService.getAllUserClaims();
+        } catch (Exception e) {
+            // Handle exceptions and return an appropriate response
+            return (List<Claim>) ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
