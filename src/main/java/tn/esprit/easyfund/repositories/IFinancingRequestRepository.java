@@ -19,6 +19,6 @@ public interface IFinancingRequestRepository extends JpaRepository<FinancingRequ
     @Query("SELECT fr FROM FinancingRequest fr WHERE fr.user.userId =:user and fr.offer.offreId =:offer")
      List<FinancingRequest>  findByUserIdAndOfferId(@Param("user")Long idu ,@Param("offer")Long ido);
     @Query("SELECT fr.user FROM FinancingRequest fr WHERE fr.financingRequestId = :financingRequestId")
-    User findUserByFinancingRequestId(Long financingRequestId);
+    User findUserByFinancingRequestId(@Param("financingRequestId")Long financingRequestId);
 
 }

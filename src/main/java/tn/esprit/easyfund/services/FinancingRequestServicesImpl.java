@@ -262,5 +262,11 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         return financingRequestRepository.findByRequestStatus(status);
 
     }
+    public FinancingRequest approve(Long id,String status){
+      FinancingRequest financingRequest =  financingRequestRepository.findById(id).orElse(null);
+      RequestStatus requestStatus =RequestStatus.valueOf(status.toUpperCase());
+      financingRequest.setRequestStatus(requestStatus);
+      return financingRequestRepository.save(financingRequest);
+    }
 
 }

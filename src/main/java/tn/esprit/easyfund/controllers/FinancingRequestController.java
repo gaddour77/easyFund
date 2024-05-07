@@ -15,6 +15,7 @@ import tn.esprit.easyfund.repositories.IUserRepository;
 import tn.esprit.easyfund.services.AuthenticationService;
 import tn.esprit.easyfund.services.FinancingRequestServicesImpl;
 import tn.esprit.easyfund.services.OfferServicesImpl;
+import tn.esprit.easyfund.services.SmsServicesImpl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,12 +25,14 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "https://localhost:4200")
 @RequestMapping("/financingrequest")
 public class FinancingRequestController {
     private FinancingRequestServicesImpl financingRequestServices;
     private OfferServicesImpl offerServices;
     private AuthenticationService authenticationService;
     private IUserRepository userRepository;
+    private SmsServicesImpl smsServices;
     private final Path rootLocation = Paths.get(" resources/excel/");
 
     @PostMapping("/addfinancing")
@@ -103,7 +106,7 @@ public class FinancingRequestController {
         //test
         String name =fr.getExcel();
         String uploadDir="src/main/resources/excel/";
-        String ecxel = "src/main/resources/excel/"+name;
+        String ecxel = "C:/xampp/htdocs/easyFund/excel/"+name;
         System.out.println(ecxel);
 
 
@@ -193,8 +196,24 @@ public class FinancingRequestController {
 
         response.flushBuffer();
     }
-    @GetMapping("/findByStaus")
-    public List<FinancingRequest> findByStatus(@RequestBody RequestStatus status){
-        return financingRequestServices.finbByStatus(status);
+    @GetMapping("/findByStatus/{status}")
+    public List<FinancingRequest> findByStatus(@PathVariable String status){
+        System.out.println("salut");
+        RequestStatus requestStatus = RequestStatus.valueOf(status.toUpperCase());
+        return financingRequestServices.finbByStatus(requestStatus);
+    }
+    @PutMapping("/descision/{id}/{status}/{idU}")
+    public FinancingRequest approve(@PathVariable Long id, @PathVariable  String status,@PathVariable Long idU){
+
+        System.out.println(id);
+        FinancingRequest financingRequest = financingRequestServices.approve(id,status);
+        User user = userRepository.findById(idU).orElse(null);
+
+        String message = "Dear Customer " + user.getFirstname() + ", your Financing Request No." + id + " has been " + status.toUpperCase() + ".";
+
+        System.out.println(message);
+        smsServices.sendSms(user.getPhoneNumber(),message);
+
+        return financingRequest;
     }
 }

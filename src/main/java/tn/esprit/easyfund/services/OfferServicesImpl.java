@@ -7,8 +7,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import tn.esprit.easyfund.dto.ElementInfo;
-import tn.esprit.easyfund.dto.Parametre;
 import tn.esprit.easyfund.entities.*;
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
@@ -287,57 +285,8 @@ public class OfferServicesImpl implements IOfferServices {
         return offerRepositories.save(offer1);
     }
 
-    public List<Offer> preference(List<ElementInfo> elements) {
-        List<Offer> offers = new ArrayList<>();
 
-        for (ElementInfo e : elements) {
-            Long id = Long.valueOf(e.getId());
-
-            Offer offer = offerRepositories.findById(id).orElse(null);
-            if (offer != null) {
-
-                offers.add(offer);
-            }
-
-        }
-        return offers;
-    }
 //systeme de recommendation interne
-    public List<Parametre> parametre(List<ElementInfo> elements) {
-        List<Parametre> parametre = new ArrayList<>();
-        List<Offer> offers = new ArrayList<>();
 
-        for (ElementInfo e : elements) {
-            Long id = Long.valueOf(e.getId());
-
-            Offer offer = offerRepositories.findById(id).orElse(null);
-            if (offer != null) {
-
-                offers.add(offer);
-            }
-        }
-        for (Offer offer : offers){
-          final   Parametre parametre1 = new Parametre();
-         if(offer.getOfferDescription().toUpperCase().contains("PC PORTABLE")){
-             parametre1.setDescription("PC PORTABLE");
-             float max =offer.getOfferPrice()+300;
-             float min = offer.getOfferPrice()-300;
-             parametre1.setPriceMax(max);
-             parametre1.setPriceMin(min);
-             parametre.add(parametre1);
-         }
-         if(offer.getOfferDescription().toUpperCase().contains("SMARTPHONE")){
-             parametre1.setDescription("SMARTPHONE");
-             float max =offer.getOfferPrice()+150;
-             float min = offer.getOfferPrice()-150;
-             parametre1.setPriceMax(max);
-             parametre1.setPriceMin(min);
-             parametre.add(parametre1);
-
-         }
-        }
-
-            return parametre;
-        }
     }
 
