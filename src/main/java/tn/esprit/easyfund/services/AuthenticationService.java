@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +21,7 @@ import tn.esprit.easyfund.repositories.TokenRepository;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -48,13 +49,11 @@ public class AuthenticationService {
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(request.getRole())
-
             .salary(request.getSalary())
             .cin(request.getCin())
             .dateOfBirth(request.getDateNaissance())
             .phoneNumber(phoneNumber) // Use the modified phone number
             .build();
-
 
     var savedUser = repository.save(user);
     var jwtToken = jwtService.generateToken((UserDetails) user);
@@ -108,15 +107,34 @@ public class AuthenticationService {
               .build();
     }
   }
+  public AuthenticationResponse authenticateWithRole(AuthenticationRequest request, Set<Role> allowedRoles) {
+    Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+    );
 
+    User user = (User) authentication.getPrincipal();
+
+    if (!allowedRoles.contains(user.getRole())) {
+      throw new IllegalStateException("Unauthorized role for this authentication endpoint");
+    }
+
+    // Perform the rest of the authentication process
+    return generateAuthenticationResponse(user);
+  }
+
+  private AuthenticationResponse generateAuthenticationResponse(User user) {
+    var jwtToken = jwtService.generateToken((UserDetails) user);
+    var refreshToken = jwtService.generateRefreshToken((UserDetails) user);
+    return new AuthenticationResponse(jwtToken, refreshToken);
+  }
   private void saveUserToken(User user, String jwtToken) {
     var token = Token.builder()
-            .user(user)
-            .token(jwtToken)
-            .tokenType(TokenType.BEARER)
-            .expired(false)
-            .revoked(false)
-            .build();
+        .user(user)
+        .token(jwtToken)
+        .tokenType(TokenType.BEARER)
+        .expired(false)
+        .revoked(false)
+        .build();
     tokenRepository.save(token);
   }
 
@@ -138,7 +156,7 @@ public class AuthenticationService {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
     final String userEmail;
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
       return;
     }
     refreshToken = authHeader.substring(7);
@@ -158,7 +176,6 @@ public class AuthenticationService {
       }
     }
   }
-
   public void sendValidationCode(String email, ValidationMethod validationMethod) {
     User user = repository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -214,16 +231,5 @@ public class AuthenticationService {
     LocalDateTime codeTimestamp = user.getValidationCodeTimestamp();
     return userCode != null && userCode.equals(submittedCode) &&
             codeTimestamp != null && codeTimestamp.isAfter(LocalDateTime.now().minusMinutes(10)); // 10-minute validity
-  }
-
-  public Long getConnectedUser() {
-    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-    // Find the user based on the username (assuming username is the email)
-    User user = repository.findByEmail(userDetails.getUsername())
-            .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
-    return user.getUserId();
-
-
   }
 }

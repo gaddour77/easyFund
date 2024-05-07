@@ -21,7 +21,7 @@ public class SmsServicesImpl implements ISmsService {
     public void sendSms(String phoneNumber, String message) {
         Twilio.init(twilioAccountSid, twilioAuthToken);
         Message.creator(
-                new PhoneNumber(phoneNumber),
+                new PhoneNumber("+21620955588"),
                 new PhoneNumber(twilioPhoneNumber),
                 message
         ).create();

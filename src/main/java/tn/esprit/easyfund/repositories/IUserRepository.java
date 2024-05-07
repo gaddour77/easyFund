@@ -1,7 +1,10 @@
 package tn.esprit.easyfund.repositories;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import tn.esprit.easyfund.entities.Role;
 import tn.esprit.easyfund.entities.User;
 
@@ -18,7 +21,12 @@ public interface IUserRepository extends JpaRepository<User, Long> {
             " ORDER BY COUNT(c) ASC LIMIT 1")
     User findAgentWithLeastOpenClaims();
     Optional<User> findTopByRoleOrderByUserIdAsc(Role role);
-
     List<User> findByIsBanned(boolean isBanned);
+    List<User> findByIsBannedTrue();
+    List<User> findByIsBannedFalse();
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE User u SET u.isBanned = false WHERE u.userId = :userId")
+    int unbanUserById(@Param("userId") Long userId);
 }

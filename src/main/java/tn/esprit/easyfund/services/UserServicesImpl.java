@@ -10,6 +10,8 @@ import tn.esprit.easyfund.entities.User;
 import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServicesImpl implements IUserServices {
@@ -94,7 +96,30 @@ public class UserServicesImpl implements IUserServices {
         userRepository.save(user);
 
     }
-    
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+    @Override
+    public List<User> findBannedUsers() {
+        return userRepository.findByIsBannedTrue();
+    }
+    @Override
+    public boolean unbanUser(Long userId) {
+        int updated = userRepository.unbanUserById(userId);
+        return updated > 0;
+    }
+    @Override
+    public List<User> findAllNonBannedUsers() {
+        return userRepository.findByIsBannedFalse();
+    }
+    @Override
+    public User findByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        return userOptional.orElse(null); // Return null if user is not found, you can handle it differently based on your requirement
+    }
+
 
 }
 

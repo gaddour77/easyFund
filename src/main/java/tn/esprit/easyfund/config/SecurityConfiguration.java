@@ -59,7 +59,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
 
                                 .anyRequest()
-                                .authenticated()
+                                .permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)

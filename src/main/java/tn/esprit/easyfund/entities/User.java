@@ -10,7 +10,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -25,8 +24,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name="User")
-public class User implements UserDetails , Serializable {
-    private static final long serialVersionUID = 1L;
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -58,28 +56,19 @@ public class User implements UserDetails , Serializable {
     private Role role;
     @OneToOne
     private Account account;
-
-  
     @OneToMany(mappedBy = "agent")
-
     @JsonIgnore
-    @OneToMany(mappedBy = "agent")
+
     private List<Claim> assignedClaims;
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Claim> submittedClaims;
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
-
+    @JsonIgnore
     private List<Token> tokens;
-
-
-    @JsonIgnore
-
-  @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
+    @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
-    @JsonIgnore
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
     private boolean isBanned ;
