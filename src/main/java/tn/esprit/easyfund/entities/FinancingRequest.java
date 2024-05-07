@@ -1,10 +1,17 @@
 package tn.esprit.easyfund.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+
+import java.util.Date;
+import java.util.Locale;
+
 
 @Getter
 @Setter

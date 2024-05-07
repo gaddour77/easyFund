@@ -1,16 +1,20 @@
 package tn.esprit.easyfund.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+
 import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -51,7 +55,7 @@ public  class MicroCredit implements Serializable {
     @NotNull(message = "Credit Type cannot be empty")
     private CreditType creditType;
 
-    //    @NotNull(message = "Payed Amount cannot be empty")
+
     private Double payedAmount;
 
     /* @OneToOne()

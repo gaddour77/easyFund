@@ -1,5 +1,6 @@
 package tn.esprit.easyfund.services;
 
+
 import lombok.AllArgsConstructor;
 import tn.esprit.easyfund.entities.ChatMessage;
 import tn.esprit.easyfund.repositories.ChatMessageRepository;
@@ -13,4 +14,6 @@ public class ChatMessageService {
         List<ChatMessage> messages = chatMessageRepository.findByChatIdOrderByDateAsc(id);
         return messages;
     }
+
+
 }

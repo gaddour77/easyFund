@@ -2,20 +2,29 @@ package tn.esprit.easyfund.controllers;
 
 import io.jsonwebtoken.io.IOException;
 import lombok.AllArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.entities.OfferCategory;
 import tn.esprit.easyfund.entities.OfferStatus;
 import tn.esprit.easyfund.services.OfferServicesImpl;
 
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import java.util.Set;
+
 
 @RestController
 @AllArgsConstructor
@@ -26,7 +35,9 @@ public class OfferController {
     private OfferServicesImpl offerServices;
     @PostMapping("/addOffre")
     public ResponseEntity<Offer> addOffre(@RequestBody Offer offer){
+
         System.out.println(offer.getOfferImage());
+
         Offer offer1 = offerServices.addOffer(offer);
         if (offer1!=null){
             return ResponseEntity.ok(offer1);
@@ -47,6 +58,7 @@ public class OfferController {
     public Offer updateOffer(@RequestBody Offer offer){
         return offerServices.updateOffer(offer);
     }
+
     @PutMapping("/approve/{id}/{offerStatus}")
     public Offer approve(@PathVariable Long id,@PathVariable String offerStatus ){
 
@@ -54,15 +66,18 @@ public class OfferController {
         System.out.println(status);
         return offerServices.approve(id,status);
     }
+
     @GetMapping("/alloffers")
     public List<Offer> findAll(){
         return offerServices.findAll();
     }
+
     @GetMapping("/getbystatus/{status}")
     List<Offer> getByStatus(@PathVariable String status){
         List<Offer> statusList= offerServices.getByStatus(status);
         return  statusList;
     }
+
     @DeleteMapping("/delete/{id}")
     public String delete (@PathVariable long id){
         return offerServices.delete(id);
@@ -82,6 +97,7 @@ public class OfferController {
         offerServices.deleteAll();
         return "database cleanned";
     }
+
     @PostMapping("/submitOffer")
     public ResponseEntity<Offer> submitOffer(@RequestParam("offerDescription") String offerDescription,
                                          @RequestParam("offerLink") String offerLink,
@@ -135,5 +151,6 @@ public class OfferController {
         String formattedDateTime = now.format(formatter);
         return prefix + "_" + formattedDateTime + extension;
     }
+
 }
 

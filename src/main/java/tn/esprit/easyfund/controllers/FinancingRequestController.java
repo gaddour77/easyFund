@@ -1,5 +1,6 @@
 package tn.esprit.easyfund.controllers;
 
+
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -21,15 +22,34 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.easyfund.entities.FinancingRequest;
+import tn.esprit.easyfund.entities.Offer;
+import tn.esprit.easyfund.entities.RequestStatus;
+import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
+import tn.esprit.easyfund.services.FinancingRequestServicesImpl;
+import tn.esprit.easyfund.services.IFinancingRequestServices;
+import tn.esprit.easyfund.services.OfferServicesImpl;
+
+import java.io.IOException;
+
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
+
 @CrossOrigin(origins = "https://localhost:4200")
+
 @RequestMapping("/financingrequest")
 public class FinancingRequestController {
     private FinancingRequestServicesImpl financingRequestServices;
     private OfferServicesImpl offerServices;
+
     private AuthenticationService authenticationService;
     private IUserRepository userRepository;
     private SmsServicesImpl smsServices;
@@ -142,6 +162,9 @@ public class FinancingRequestController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+
+   
     @PostMapping("/addfinancings")
     public List<FinancingRequest> addfinancings(List<FinancingRequest> financingRequests){
 
@@ -157,18 +180,22 @@ public class FinancingRequestController {
     }
     @GetMapping("/findbyoffer/{id}")
     public List<FinancingRequest> findByOffer(@PathVariable long id){
+
         System.out.println(id);
+
         return financingRequestServices.findByOffer(id);
     }
     @GetMapping("/findbyuser/{id}")
     public List<FinancingRequest> findByUser(@PathVariable  long id){
         return financingRequestServices.findByUser(id);
     }
+
     @GetMapping("/mylist")
     public List<FinancingRequest> findMyfinancings(){
         Long id = authenticationService.getConnectedUser();
         return financingRequestServices.findByUser(id);
     }
+
 
     @DeleteMapping("/delete/{id}")
     public String delete(@PathVariable long id){
@@ -184,7 +211,9 @@ public class FinancingRequestController {
     }
     @GetMapping("/excel")
     public void generateExcelReport(HttpServletResponse response) throws Exception{
+
         System.out.println("hi /ecxel");
+
         response.setContentType("application/octet-stream");
 
         String headerKey = "Content-Disposition";
@@ -196,6 +225,7 @@ public class FinancingRequestController {
 
         response.flushBuffer();
     }
+
     @GetMapping("/findByStatus/{status}")
     public List<FinancingRequest> findByStatus(@PathVariable String status){
         System.out.println("salut");
@@ -215,5 +245,6 @@ public class FinancingRequestController {
         smsServices.sendSms(user.getPhoneNumber(),message);
 
         return financingRequest;
+
     }
 }

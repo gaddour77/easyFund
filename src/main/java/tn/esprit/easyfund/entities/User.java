@@ -58,6 +58,10 @@ public class User implements UserDetails , Serializable {
     private Role role;
     @OneToOne
     private Account account;
+
+  
+    @OneToMany(mappedBy = "agent")
+
     @JsonIgnore
     @OneToMany(mappedBy = "agent")
     private List<Claim> assignedClaims;
@@ -70,7 +74,9 @@ public class User implements UserDetails , Serializable {
 
     private List<Token> tokens;
 
+
     @JsonIgnore
+
   @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
     @JsonIgnore

@@ -1,13 +1,16 @@
 package tn.esprit.easyfund.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import java.io.Serializable;
+
 import java.util.Set;
 
 @Getter
@@ -15,11 +18,14 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+
 public class Chat implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long chatId;
     private String name;
+
     @JsonIgnore
     @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "chat")
     private Set<ChatMessage> chatMessages;
@@ -31,6 +37,9 @@ public class Chat implements Serializable {
     )
 
     private Set<User> participants;
+
+
+  
     public Chat(String name){
         this.name=name;
     }

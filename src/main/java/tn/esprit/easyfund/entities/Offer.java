@@ -27,8 +27,10 @@ public class Offer implements Serializable {
     @NonNull
     private float offerPrice;
     @NonNull
+
     private String offerImage;
     @NonNull
+
     @Enumerated(EnumType.STRING)
     private OfferStatus offerStatus;
     @Enumerated(EnumType.STRING)
@@ -37,7 +39,9 @@ public class Offer implements Serializable {
     @JsonIgnore
     @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "offer")
     private Set<FinancingRequest> financingRequests;
+
     public Offer(@NonNull String offerDescription, @NonNull String offerLink, @NonNull float offerPrice, @NonNull OfferStatus offerStatus, OfferCategory offerCategory,String offerImage) {
+
         this.offerDescription = offerDescription;
         this.offerLink = offerLink;
         this.offerPrice = offerPrice;

@@ -7,6 +7,7 @@ import tn.esprit.easyfund.entities.Chat;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.entities.OfferCategory;
 
+
 import java.util.List;
 
 public interface IChatRepositories extends JpaRepository<Chat,Long> {
@@ -14,5 +15,6 @@ public interface IChatRepositories extends JpaRepository<Chat,Long> {
     Chat findByName(@Param("offreC") String name );
     @Query("SELECT c FROM Chat c JOIN c.participants p WHERE p.userId = :userId")
     List<Chat> findChatsByUserId(@Param("userId")Long userId);
+
 
 }

@@ -6,10 +6,26 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import org.springframework.data.domain.PageRequest;
+
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.*;
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Row;
+
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -20,9 +36,11 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
+
 public class OfferServicesImpl implements IOfferServices {
     private IOfferRepositories offerRepositories;
     private IFinancingRequestRepository financingRequestRepository;
+
 
     @Override
     public Offer addOffer(Offer offer) {
@@ -71,12 +89,14 @@ public class OfferServicesImpl implements IOfferServices {
 
     }
 
+
     public List<Offer> addOffers(List<Offer> listOffers) {
         return offerRepositories.saveAll(listOffers);
     }
 
     public Offer updateOffer(Offer offer) {
         Offer existingOffer = offerRepositories.findById(offer.getOffreId()).orElse(null);
+
 
         existingOffer.setOfferLink(offer.getOfferLink());
         existingOffer.setOfferCategory(offer.getOfferCategory());
@@ -86,6 +106,7 @@ public class OfferServicesImpl implements IOfferServices {
         return offerRepositories.save(existingOffer);
 
     }
+
 
     public List<Offer> findAll() {
         return offerRepositories.findAll();
@@ -122,11 +143,13 @@ public class OfferServicesImpl implements IOfferServices {
         WebSite myTek = new WebSite("https://www.mytek.tn/catalogsearch/result/?q=offre", "li.item.product.product-item", "div.prdtBILDetails", "span.special-price", "img.product-image-photo");
 
         List<WebSite> webSiteList = new ArrayList<>();
+
         webSiteList.add(myTek);
         webSiteList.add(jumia);
         webSiteList.add(tunisianet);
 
         for (WebSite webSite : webSiteList) {
+
             try {
                 Connection con = Jsoup.connect(webSite.getUrl());
                 Document doc = con.get();
@@ -163,6 +186,7 @@ public class OfferServicesImpl implements IOfferServices {
                             OfferStatus offerStatus = OfferStatus.PENDING;
                             OfferCategory category = OfferCategory.TECH;
                             //partie valide
+
                            /*
 
                             String k = price.replaceAll("\\..*$", "");
@@ -197,12 +221,14 @@ public class OfferServicesImpl implements IOfferServices {
                 }
 
             } catch (Exception ex) {
+
                 ex.printStackTrace();
             }
         }
 
         //partie valide
         List<Offer> offerList = new ArrayList<>();
+
         // List<Offer> exo =new ArrayList<>();
 
         for (Offer offer : scrapOffers) {
@@ -265,11 +291,13 @@ public class OfferServicesImpl implements IOfferServices {
     }
 
     public FinancingRequest affecter(Long idO, Long fR) {
+
         Offer offer = offerRepositories.findById(idO).orElse(null);
         FinancingRequest financingRequest = financingRequestRepository.findById(fR).orElse(null);
         financingRequest.setOffer(offer);
         return financingRequestRepository.save(financingRequest);
     }
+
 
     public List<FinancingRequest> financingRequests(Long id) {
         Offer offer = offerRepositories.findById(id).orElse(null);
@@ -289,4 +317,5 @@ public class OfferServicesImpl implements IOfferServices {
 //systeme de recommendation interne
 
     }
+
 

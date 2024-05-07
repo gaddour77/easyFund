@@ -1,20 +1,30 @@
 package tn.esprit.easyfund.controllers;
 
+
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
+
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.stereotype.Controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+
 import tn.esprit.easyfund.entities.Chat;
 import tn.esprit.easyfund.entities.ChatMessage;
 import tn.esprit.easyfund.repositories.ChatMessageRepository;
 import tn.esprit.easyfund.repositories.IChatRepositories;
+
 import tn.esprit.easyfund.services.ChatMessageService;
 
 import java.time.LocalDate;
@@ -33,6 +43,15 @@ public class ChatController {
     private final ChatMessageRepository messageRepository;
     private final IChatRepositories chatRepositories;
 
+
+
+import java.util.List;
+
+@Controller
+@AllArgsConstructor
+public class ChatController {
+    private final ChatMessageRepository messageRepository;
+    private final IChatRepositories chatRepositories;
      @GetMapping("/chats")
      public List<Chat> chats(Long id){
          return null;
@@ -42,7 +61,9 @@ public class ChatController {
     public ChatMessage sendMessage(
             @Payload ChatMessage chatMessage
     ) {
+
          chatMessage.setDate(new Date());
+
         messageRepository.save(chatMessage);
         return chatMessage;
     }
@@ -57,6 +78,7 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
         return chatMessage;
     }
+
     @PostMapping("/send-message")
     public void sendMessage1(@RequestBody ChatMessage message) {
         // Envoi du message WebSocket
@@ -77,4 +99,5 @@ public class ChatController {
 
          return messages;
     }
+
 }
