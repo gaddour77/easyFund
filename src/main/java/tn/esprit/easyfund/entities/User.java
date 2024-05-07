@@ -56,19 +56,26 @@ public class User implements UserDetails {
     private Role role;
     @OneToOne
     private Account account;
-    @OneToMany(mappedBy = "agent")
     @JsonIgnore
+
+    @OneToMany(mappedBy = "agent")
 
     private List<Claim> assignedClaims;
+    @JsonIgnore
+
 
     @OneToMany(mappedBy = "user")
-    @JsonIgnore
     private List<Claim> submittedClaims;
-    @OneToMany(mappedBy = "user")
     @JsonIgnore
+
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+    @JsonIgnore
+
     @OneToMany (cascade = CascadeType.ALL ,mappedBy = "user")
     private Set<FinancingRequest> financingRequests;
+    @JsonIgnore
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Profile profile;
     private boolean isBanned ;

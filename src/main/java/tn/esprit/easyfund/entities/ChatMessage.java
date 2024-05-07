@@ -28,7 +28,7 @@ public class ChatMessage implements Serializable {
     private String sender;
     private String stamp;
 
-    private Date date;
+
     private Long idSender;
     private Long idReceiver;
     @JsonIgnore

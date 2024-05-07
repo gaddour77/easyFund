@@ -119,6 +119,16 @@ public class UserServicesImpl implements IUserServices {
         Optional<User> userOptional = userRepository.findByEmail(email);
         return userOptional.orElse(null); // Return null if user is not found, you can handle it differently based on your requirement
     }
+    @Override
+    public User findById(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (userRepository.findById(userId).isPresent()) {
+            System.out.println("Credit found");
+        } else {
+            System.out.println("Credit not found");
+        }
+        return user;
+    }
 
 
 }

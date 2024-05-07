@@ -28,6 +28,11 @@ public interface IMicroCreditService {
 
     List<MicroCredit> getCreditByAccountId(Long id);
 
+//    List<MicroCredit> getCreditByUser(Long id);
+
+    List<MicroCredit> getCreditByUser(Long id);
+
+
     List<Object> Simulation(double amount, int period,String typePeriod);
     double scoreCredit(double amount,int period,String typePeriod);
 

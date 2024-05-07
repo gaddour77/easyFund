@@ -3,7 +3,7 @@ package tn.esprit.easyfund.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.easyfund.dto.ElementInfo;
+import tn.esprit.easyfund.entities.ElementInfo;
 import tn.esprit.easyfund.repositories.IInfoRepository;
 import tn.esprit.easyfund.services.InfoServices;
 

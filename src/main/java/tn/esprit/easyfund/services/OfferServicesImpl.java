@@ -255,8 +255,8 @@ public class OfferServicesImpl implements IOfferServices {
                         // Extracts file name from URL
                         String fileName = image.substring(image.lastIndexOf("/") + 1);
 
-                        // Opens an output stream to save into file
-                        String saveDir = "C:/xampp/htdocs/easyFund/img/";
+                        // Opens an output stream to save into filefinan
+                        String saveDir = "C:/xamppppp/htdocs/easyFund/img/";
                         FileOutputStream outputStream = new FileOutputStream(saveDir + fileName);
                         String path = "http://localhost/easyFund/img/";
                         offer.setOfferImage(path + fileName);

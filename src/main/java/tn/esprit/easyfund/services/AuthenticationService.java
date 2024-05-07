@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -231,5 +232,15 @@ public class AuthenticationService {
     LocalDateTime codeTimestamp = user.getValidationCodeTimestamp();
     return userCode != null && userCode.equals(submittedCode) &&
             codeTimestamp != null && codeTimestamp.isAfter(LocalDateTime.now().minusMinutes(10)); // 10-minute validity
+  }
+  public Long getConnectedUser() {
+    UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    // Find the user based on the username (assuming username is the email)
+    User user = repository.findByEmail(userDetails.getUsername())
+            .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+    return user.getUserId();
+
+
   }
 }

@@ -18,4 +18,6 @@ public interface IUserServices {
     public boolean unbanUser(Long userId);
     public List<User> findAllNonBannedUsers();
     public User findByEmail(String email);
+    User findById(Long userId);
+
 }

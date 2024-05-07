@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 
 @SpringBootApplication
-@EnableJpaRepositories
+
 @EnableAsync
 @EnableJpaRepositories("tn.esprit.easyfund.repositories")
 @EntityScan("tn.esprit.easyfund.entities")

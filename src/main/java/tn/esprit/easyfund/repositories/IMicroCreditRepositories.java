@@ -3,6 +3,7 @@ package tn.esprit.easyfund.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tn.esprit.easyfund.entities.MicroCredit;
 import tn.esprit.easyfund.entities.CreditStatus;
@@ -21,5 +22,8 @@ public interface IMicroCreditRepositories extends JpaRepository<MicroCredit, Lon
 
     @Query("SELECT credit from MicroCredit credit where credit.accountFK.id = :accountId")
     List<MicroCredit> retrieveCreditsByAccountID(Long accountId);
+
+    @Query("SELECT credit FROM MicroCredit credit WHERE credit.accountFK.user.userId =:user")
+    List<MicroCredit> retriveCreditByUser(@Param("user")Long idu );
 
 }

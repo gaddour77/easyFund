@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -27,16 +28,15 @@ public class Account implements Serializable {
     private Date lastLogin;
     private float score;
     private boolean isActive;
-    private int accounRref;
+    private int accounRef;
+
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
-    @JsonIgnore
-    @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "accountFK")
-    private Set<MicroCredit> microCredits;
-
     @OneToOne
+    @JoinColumn(name = "userId")
+    @JsonIgnore
     private User user;
 
-}
 
+}

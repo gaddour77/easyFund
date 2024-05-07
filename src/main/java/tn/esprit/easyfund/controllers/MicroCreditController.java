@@ -5,14 +5,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import tn.esprit.easyfund.entities.CreditStatus;
-import tn.esprit.easyfund.entities.CreditType;
-import tn.esprit.easyfund.entities.MicroCredit;
+import tn.esprit.easyfund.entities.*;
 
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.easyfund.services.MicroCreditServicesImpl;
+import tn.esprit.easyfund.services.*;
 
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,12 +22,34 @@ import java.util.*;
 @NoArgsConstructor
 @RequestMapping(path = "credit")
 @RestController
+@CrossOrigin("http://localhost:4200/")
+
 public class MicroCreditController {
 
     @Autowired
     private MicroCreditServicesImpl microCreditService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private UserServicesImpl userServices;
+
+    @Autowired
+    private SmsServicesImpl smsServices;
+
     @PostMapping(path = "createCredit")
     public ResponseEntity<MicroCredit> createMicroCredit(@RequestBody MicroCredit microCredit) {
+        Long id = authenticationService.getConnectedUser();
+        User connectedUser = userServices.findById(id);
+        Account connectedUserAccountaccount = connectedUser.getAccount();
+        microCredit.setAccountFK(connectedUserAccountaccount);
+        double score =  microCreditService.scoreCredit(microCredit.getCreditAmmount(), microCredit.getPeriod(), String.valueOf(microCredit.getTypePeriod()));
+        microCredit.setInterestRate((float) microCreditService.calculateInterest(score));
+        System.out.println(microCredit);
         MicroCredit credit = microCreditService.createMicroCredit(microCredit);
         if (credit == null) {
             return ResponseEntity.notFound().build(); // Credit not found, return 404
@@ -105,7 +126,19 @@ public class MicroCreditController {
             return ResponseEntity.notFound().build();
         }
         MicroCredit updatedCredit = microCreditService.updateStatus(idCredit, status); // Credit updated successfully, return 200
+        smsServices.sendSms(credit.getAccountFK().getUser().getPhoneNumber(),"Hello from easyfund, We would like you to know that your credit N°"+credit.getMicroCreditId()+" Status has been change!");
         return ResponseEntity.ok(updatedCredit);
+    }
+
+    @GetMapping("getCreditByConnectedUser")
+    public ResponseEntity<List<MicroCredit>> getCreditByConnectedUser() {
+        Long id = authenticationService.getConnectedUser();
+        System.out.println(id);
+        List<MicroCredit> credits = microCreditService.getCreditByUser(id);
+        if (credits == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(credits);
     }
 
     @GetMapping("getCreditByAccount/{idAccount}")
@@ -116,6 +149,7 @@ public class MicroCreditController {
         }
         return ResponseEntity.ok(credits); // get successfully, return 200
     }
+
 
     @GetMapping("simulator/{amount}/{period}/{typePeriod}")
     public ResponseEntity<List<Object>> Simulation(@PathVariable double amount, @PathVariable int period,@PathVariable String typePeriod ){
@@ -138,10 +172,9 @@ public class MicroCreditController {
         String currentDateTime = dateFormatter.format(new Date());
 
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=CreditSimulation_" + amount + "_" + typePeriod + "_" + period + ".xlsx";
+        String headerValue = "attachment; filename=CreditSimulation_" + amount + "" + typePeriod + "" + period + ".xlsx";
         response.setHeader(headerKey, headerValue);
         ResponseEntity<List<Object>> simulationResponse = Simulation(amount, period, typePeriod);
-
         if (simulationResponse.getStatusCode() == HttpStatus.OK) {
             List<Object> simulation = simulationResponse.getBody();
             CreditExcelExporter excelExporter = new CreditExcelExporter(simulation);
@@ -158,8 +191,9 @@ public class MicroCreditController {
         String currentDateTime = dateFormatter.format(new Date());
 
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=CreditSimulation_" + amount + "_" + typePeriod + "_" + period + ".pdf";
-        response.setHeader(headerKey, headerValue);
+        String headerValue = "attachment; filename=CreditSimulation_" + amount + "" + typePeriod + "" + period + ".pdf";
+//        response.setHeader(headerKey, headerValue);
+        response.setHeader("Content-Disposition", "attachment; filename=filename.xlsx");
 
         ResponseEntity<List<Object>> simulationResponse = Simulation(amount, period, typePeriod);
 
@@ -175,5 +209,3 @@ public class MicroCreditController {
 
 
 }
-
-

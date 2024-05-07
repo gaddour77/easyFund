@@ -1,4 +1,4 @@
-package tn.esprit.easyfund.dto;
+package tn.esprit.easyfund.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

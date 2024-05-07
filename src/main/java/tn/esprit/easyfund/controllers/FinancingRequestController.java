@@ -102,7 +102,7 @@ public class FinancingRequestController {
     public ResponseEntity<Resource> downloadExcelFile(@PathVariable String name) throws IOException {
         //test
         String uploadDir="src/main/resources/excel/";
-        String ecxel = "C:/xampp/htdocs/easyFund/excel/"+name;
+        String ecxel = "C:/xamppppp/htdocs/easyFund/excel/"+name;
         System.out.println(ecxel);
 
        /* File file = ResourceUtils.getFile(ecxel);
@@ -125,8 +125,8 @@ public class FinancingRequestController {
 
         //test
         String name =fr.getExcel();
-        String uploadDir="src/main/resources/excel/";
-        String ecxel = "C:/xampp/htdocs/easyFund/excel/"+name;
+        String uploadDir="C:/xamppppp/htdocs/easyFund/excel/";
+        String ecxel = "C:/xamppppp/htdocs/easyFund/excel/"+name;
         System.out.println(ecxel);
 
 

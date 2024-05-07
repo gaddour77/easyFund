@@ -4,13 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.controllers.PayPalController;
 import tn.esprit.easyfund.controllers.SmsController;
 import tn.esprit.easyfund.entities.CreditStatus;
 import tn.esprit.easyfund.entities.CreditType;
 import tn.esprit.easyfund.entities.MicroCredit;
+
+import tn.esprit.easyfund.entities.User;
+
 import tn.esprit.easyfund.repositories.IMicroCreditRepositories;
+import tn.esprit.easyfund.repositories.IUserRepository;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -30,6 +36,9 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
     private IMicroCreditRepositories microCreditRepositories;
 
     @Autowired
+    private IUserRepository userRepository;
+
+    @Autowired
     private SmsController smsController;
 
     @Autowired
@@ -38,6 +47,16 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
 
     @Override
     public MicroCredit createMicroCredit(MicroCredit microCredit) {
+        //  Get the current user details from the security context
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Find the user based on the username (assuming username is the email)
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+        System.out.println(user.getAccount());
+
+        microCredit.setAccountFK(user.getAccount());
         return microCreditRepositories.save(microCredit);
 
     }
@@ -130,6 +149,16 @@ public class MicroCreditServicesImpl implements IMicroCreditService {
         List<MicroCredit> credits = microCreditRepositories.retrieveCreditsByAccountID(id);
         if (credits.isEmpty()) {
             System.out.println("No credits found");
+            return null;
+        }
+        return credits;
+    }
+
+    @Override
+    public List<MicroCredit> getCreditByUser(Long id) {
+        List<MicroCredit> credits = microCreditRepositories.retriveCreditByUser(id);
+        if (credits.isEmpty()) {
+            System.out.println("No credits found for user " + id);
             return null;
         }
         return credits;
