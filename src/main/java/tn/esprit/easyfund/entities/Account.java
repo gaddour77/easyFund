@@ -37,4 +37,6 @@ public class Account implements Serializable {
 
     @OneToOne
     private User user;
+
 }
+

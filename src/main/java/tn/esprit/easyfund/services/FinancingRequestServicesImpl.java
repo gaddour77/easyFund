@@ -4,6 +4,9 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
+
+
+
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.QuoteMode;
@@ -13,19 +16,25 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.springframework.stereotype.Service;
 import tn.esprit.easyfund.entities.FinancingRequest;
 import tn.esprit.easyfund.entities.Offer;
 import tn.esprit.easyfund.entities.RequestStatus;
+
+import tn.esprit.easyfund.entities.User;
+
 import tn.esprit.easyfund.repositories.IFinancingRequestRepository;
 import tn.esprit.easyfund.repositories.IOfferRepositories;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.time.Period;
+
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+
 import java.util.List;
 
 @AllArgsConstructor
@@ -35,12 +44,14 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     private IOfferRepositories offerRepositories;
 
     public FinancingRequest addFinancing(FinancingRequest financingRequest){
-        List<FinancingRequest> fr = null;
-                fr =financingRequestRepository.findByUserIdAndOfferId(financingRequest.getUser().getUserId(),financingRequest.getOffer().getOffreId());
-       if (fr==null){
+
+
            return financingRequestRepository.save(financingRequest);
-       }
-       return null;
+
+    }
+    public User findUser(Long id){
+        return financingRequestRepository.findUserByFinancingRequestId(id);
+
     }
     public List<FinancingRequest> detect(FinancingRequest fr){
         return financingRequestRepository.findByUserIdAndOfferId(fr.getUser().getUserId(),fr.getOffer().getOffreId());
@@ -72,6 +83,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     public List<FinancingRequest> findByUser(long id){
         return financingRequestRepository.findByUser(id);
     }
+ 
     public ServletOutputStream calculateAmortizationSchedule(FinancingRequest financingRequest,HttpServletResponse response,String name) throws IOException, InterruptedException {
        // CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -135,6 +147,7 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         fs.close();
         return ops;
     }
+
     public void calculateAmortizationSchedule1(FinancingRequest financingRequest,HttpServletResponse response,String name) throws IOException, InterruptedException {
         // CSVFormat format = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL);
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -175,7 +188,9 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         System.out.println("taux d'intert:   "+tauxInteretAnnuel);
         double tauxInteretMensuel = tauxInteretAnnuel / 12 / 100;
         double paiementMensuel = offer.getOfferPrice() * (tauxInteretMensuel / (1 - Math.pow(1 + tauxInteretMensuel, -moisDifference)));
-        System.out.println("id :"+paiementMensuel+tauxInteretAnnuel+tauxInteretMensuel+"mois :"+moisDifference+"dated"+dateDebut);
+
+          System.out.println("id :"+paiementMensuel+tauxInteretAnnuel+tauxInteretMensuel+"mois :"+moisDifference+"dated"+dateDebut);
+
 
         for (int mois = 1; mois <= moisDifference; mois++) {
             Row ligne = feuille.createRow(mois);
@@ -198,7 +213,9 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
                 soldeFinal=0 ;
             }
         }
-        String uploadDir="C:/Users/GADOUR/IdeaProjects/easyFund/src/main/resources/excel";
+
+        String uploadDir="C:/xampp/htdocs/easyFund/excel";
+
         String  fileName = "";
         File file = new File(uploadDir + File.separator + name);
         FileOutputStream fs = new FileOutputStream(file);
@@ -252,7 +269,10 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
     }
     public double installmentPayment(long id) throws IOException {
         FinancingRequest financingRequest =financingRequestRepository.findById(id).orElse(null);
-         String path = financingRequest.getExcel();
+
+        String uploadDir="C:/xampp/htdocs/easyFund/excel/";
+         String path = uploadDir+ financingRequest.getExcel();
+
         double amount =0;
          if (path!=null & financingRequest!=null){
              POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(path));
@@ -331,4 +351,13 @@ public class FinancingRequestServicesImpl implements IFinancingRequestServices{
         return financingRequestRepository.findByRequestStatus(status);
 
     }
+
+    public FinancingRequest approve(Long id,String status){
+      FinancingRequest financingRequest =  financingRequestRepository.findById(id).orElse(null);
+      RequestStatus requestStatus =RequestStatus.valueOf(status.toUpperCase());
+      financingRequest.setRequestStatus(requestStatus);
+      return financingRequestRepository.save(financingRequest);
+    }
+
+
 }

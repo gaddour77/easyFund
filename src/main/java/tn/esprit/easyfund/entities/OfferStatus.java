@@ -1,5 +1,5 @@
 package tn.esprit.easyfund.entities;
 
 public enum OfferStatus {
-    PENDING,LISTED,ARCHIVED,CLOSED
+    ACTIVE,PENDING,LISTED,ARCHIVED,CLOSED
 }

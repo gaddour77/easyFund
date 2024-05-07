@@ -16,7 +16,9 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+
 @CrossOrigin(origins = "http://localhost:4200") // Allow cross-origin requests from Angular app
+
 
 public class AuthenticationController {
 
