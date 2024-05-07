@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -30,6 +27,8 @@ public class Offer implements Serializable {
     @NonNull
     private float offerPrice;
     @NonNull
+    private String offerImage;
+    @NonNull
     @Enumerated(EnumType.STRING)
     private OfferStatus offerStatus;
     @Enumerated(EnumType.STRING)
@@ -38,7 +37,7 @@ public class Offer implements Serializable {
     @JsonIgnore
     @OneToMany(cascade = {CascadeType.REMOVE,CascadeType.PERSIST} ,mappedBy = "offer")
     private Set<FinancingRequest> financingRequests;
-    public Offer(@NonNull String offerDescription, @NonNull String offerLink, @NonNull float offerPrice, @NonNull OfferStatus offerStatus, OfferCategory offerCategory) {
+    public Offer(@NonNull String offerDescription, @NonNull String offerLink, @NonNull float offerPrice, @NonNull OfferStatus offerStatus, OfferCategory offerCategory,String offerImage) {
         this.offerDescription = offerDescription;
         this.offerLink = offerLink;
         this.offerPrice = offerPrice;

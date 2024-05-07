@@ -1,7 +1,6 @@
 package tn.esprit.easyfund.controllers;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.easyfund.dto.StripeChargeDto;
 import tn.esprit.easyfund.dto.StripeTokenDto;
@@ -32,10 +31,12 @@ public class StripeApiController {
     @PostMapping("/charge/{id}")
     @ResponseBody
     public StripeChargeDto charge(@RequestBody StripeChargeDto model,@PathVariable long id) throws IOException {
-        financingRequestServices.installmentPayment(id);
+       // financingRequestServices.installmentPayment(id);
         FinancingRequest financingRequest = financingRequestServices.findById(id);
         double amount = financingRequestServices.installmentPayment(id);
          model.setAmount(amount);
+         String token = "tok_visa";
+         model.setStripeToken(token);
         return stripeService.charge(model);
     }
 

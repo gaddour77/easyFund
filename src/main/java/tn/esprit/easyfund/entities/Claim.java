@@ -6,7 +6,11 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+
+import java.io.Serializable;
+
 import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +21,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Claim {
+public class Claim implements Serializable {
+    private static final long serialVersionUID = 1L;
 
 
 
@@ -58,5 +63,7 @@ public class Claim {
         this.claimStatus = claimStatus;
         this.user = user;
         this.createdAt = createdAt;
+
         this.title=title;   }
 }
+

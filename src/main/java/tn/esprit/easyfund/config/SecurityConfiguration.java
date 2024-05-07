@@ -21,11 +21,11 @@ import static tn.esprit.easyfund.entities.Role.AGENT;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
+
 public class SecurityConfiguration {
 
     private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**","/api/v1/auth/forgot-password/**",
             "/v2/api-docs",
-            "/v3/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
             "/swagger-resources",
@@ -34,6 +34,7 @@ public class SecurityConfiguration {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
+            "/swagger-ui/index.html#/**",
             "/swagger-ui.html",
             "/api/v1/auth/forgot-password/send-code",
     "api/reports/bannedUsers",
@@ -49,6 +50,14 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
+
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), AGENT.name())
+
                                 .anyRequest()
                                 .authenticated()
                 )

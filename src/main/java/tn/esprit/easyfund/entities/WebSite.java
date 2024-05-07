@@ -15,5 +15,6 @@ public class WebSite {
     private String baliseName;
     private  String baliseDescription;
     private String balisePrice;
+    private  String baliseImage;
 }
 

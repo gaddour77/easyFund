@@ -17,7 +17,6 @@ import tn.esprit.easyfund.repositories.IUserRepository;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-
   private final IUserRepository repository;
 
   @Bean
